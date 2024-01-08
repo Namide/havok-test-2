@@ -16,10 +16,9 @@ const router = new Router([
     path: "/error",
     regex: /^\*$/,
   },
-]);
+] as const);
 
-router.signal.on("landing", () => console.log("landing"));
-router.signal.on("404", () => console.log("404"));
-router.changePage({
-  path: document.location.pathname,
-});
+router.on("landing", () => console.log("landing"));
+router.on("404", () => console.log("404"));
+console.log(router.route?.name)
+

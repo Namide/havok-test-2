@@ -7,19 +7,25 @@ export type RouteDescription = {
   regex: RegExp,
 }
 
-/**
- * Event emitter
- */
-export class Router<RouteDef extends RouteDescription> {
-
-  routes: RouteDef[]
-
-  signal = new EventEmitter<{
+export type RouteEmitter<RouteDef extends RouteDescription> =
+  {
     name: RouteDef["name"];
     callback: () => void;
-  }>()
+  } |
+  {
+    name: 'change',
+    callback: (name: RouteDef["name"]) => void
+  }
+
+
+export class Router<RouteDef extends RouteDescription> extends EventEmitter<RouteEmitter<RouteDef>> {
+
+  routes: RouteDef[]
+  route?: RouteDef
 
   constructor(routes: RouteDef[]) {
+    super()
+
     this.routes = routes
     this.onPathChange = this.onPathChange.bind(this)
     this.init()
@@ -27,29 +33,33 @@ export class Router<RouteDef extends RouteDescription> {
 
   private init() {
     window.addEventListener("popstate", this.onPathChange)
+    this.changePage({
+      path: document.location.pathname,
+    });
   }
 
   onPathChange() {
     this.changePage({
       path: document.location.pathname,
-      changePath: false,
+      updatePath: false,
     });
   }
 
   changePage({
     path,
-    changePath = true,
-    // oldPath = document.location.pathname || '/'
-  }: { path: string; changePath?: boolean; oldPath?: string }) {
+    updatePath = true
+  }: { path: string; updatePath?: boolean; oldPath?: string }) {
 
-    const route = this.pathToRoute(path);
+    this.route = this.pathToRoute(path);
 
-    if (changePath) {
-      history.pushState({}, route.title, route.path);
-      this.signal.dispatch(route.name);
+    if (updatePath) {
+      history.pushState({}, this.route.title, this.route.path);
     }
 
-    document.title = route.title;
+    document.title = this.route.title;
+
+    this.emit(this.route.name);
+    this.emit('change', this.route.name)
   };
 
   pathToRoute(path: string) {
