@@ -1,3 +1,4 @@
+import { initHome } from "./pages/initHome";
 import { Router } from "./router/Router";
 import "./style.css";
 
@@ -22,3 +23,4 @@ router.on("landing", () => console.log("landing"));
 router.on("404", () => console.log("404"));
 console.log(router.route?.name)
 
+initHome()
