@@ -87,7 +87,7 @@ export async function initHome() {
         rand(4, 2),
         rand(GROUND_SIZE * 0.48, -GROUND_SIZE * 0.48),
       ],
-      size: [rand(1, 0.2), rand(1, 0.2), rand(1, 0.2)],
+      size: [rand(1.2, 0.2), rand(1.2, 0.2), rand(1.2, 0.2)],
       rotation: getRandomRotation(),
       // mouseEmitter,
     });
