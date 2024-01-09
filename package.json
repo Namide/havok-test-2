@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@types/three": "^0.159.0",
+    "nipplejs": "^0.10.1",
     "three": "^0.159.0",
     "twon": "^0.1.1"
   }
