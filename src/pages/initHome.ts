@@ -29,7 +29,7 @@ export async function initHome() {
 
   // Ground
   const ground = new Ground(world, texture)
-  world.scene.add(ground.render.mesh);
+  world.scene.add(ground.mesh);
 
   // Sphere
   for (let i = 0; i < 10; i++) {
