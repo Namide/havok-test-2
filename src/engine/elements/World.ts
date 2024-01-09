@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { getHavok } from "../physic/getHavok";
+import { Havok, getHavok } from "../physic/getHavok";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 import pcssFragment from "../render/pcss.fragment.glsl";
 import pcssGetShadowFragment from "../render/pcssGetShadow.fragment.glsl";
@@ -24,10 +24,10 @@ export class World {
 
   controls?: OrbitControls
 
-  havok: Awaited<ReturnType<typeof getHavok>>
+  havok: Havok
   physic: HP_WorldId
 
-  constructor(havok: Awaited<ReturnType<typeof getHavok>>) {
+  constructor(havok: Havok) {
 
     this.resize = this.resize.bind(this)
 

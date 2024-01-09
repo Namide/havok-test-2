@@ -6,6 +6,9 @@ import HavokPhysics, {
   MotionType,
 } from "./havok/HavokPhysics";
 
+// https://github.com/N8python/havokDemo
+// https://github.com/BabylonJS/havok
+// https://github.com/BabylonJS/Babylon.js/blob/48cf7b374a7bbee9f3bef02f2992715ed683cf98/packages/dev/core/src/Physics/v2/Plugins/havokPlugin.ts
 let havok: HavokPhysicsWithBindings & {
   HEAPU8: Uint8Array;
   MotionType: {
@@ -39,3 +42,5 @@ export async function getHavok() {
   }
   return havok;
 }
+
+export type Havok = Awaited<ReturnType<typeof getHavok>>
