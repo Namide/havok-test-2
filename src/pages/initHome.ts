@@ -38,7 +38,7 @@ export async function initHome() {
       world,
       texture,
       shape: PhysicShapeType.Sphere,
-      position: [rand(1, -1), rand(4, 2), rand(1, -1)],
+      position: [rand(1, -1), rand(8, 4), rand(1, -1)],
       size: rand(0.2, 0.1),
     });
     world.scene.add(sphere.render.mesh);
@@ -84,7 +84,7 @@ export async function initHome() {
       shape: PhysicShapeType.Box,
       position: [
         rand(GROUND_SIZE * 0.48, -GROUND_SIZE * 0.48),
-        rand(4, 2),
+        rand(8, 4),
         rand(GROUND_SIZE * 0.48, -GROUND_SIZE * 0.48),
       ],
       size: [rand(1.2, 0.2), rand(1.2, 0.2), rand(1.2, 0.2)],
