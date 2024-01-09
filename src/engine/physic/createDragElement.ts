@@ -3,7 +3,7 @@ import { DynamicTween, easeInOutExpo } from "twon";
 import { DRAG_DISTANCE } from "../config";
 import { euler, quaternion, vector3 } from "../constants";
 import { MouseEmitter, MousePosition } from "../events/createMouseEmitter";
-import { PhysicWorld, RenderWorld } from "../render/World";
+import { PhysicWorld, RenderWorld } from "../elements/World";
 import { getHavok } from "./getHavok";
 import {
   HP_BodyId,
@@ -19,7 +19,7 @@ export const createDragElement = async ({
   body,
   autoRotate = true,
 }: {
-  physicWorld: PhysicWorld;
+  physic: PhysicWorld;
   renderWorld: RenderWorld;
   mesh: THREE.Mesh;
   body: HP_BodyId;

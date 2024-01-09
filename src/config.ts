@@ -1,4 +1,4 @@
-import { Vector3 } from "./physic/havok/HavokPhysics";
+import { Vector3 } from "./engine/physic/havok/HavokPhysics";
 
 export const SHADOW = false;
 export const SOFT_SHADOW = false;

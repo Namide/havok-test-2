@@ -1,4 +1,4 @@
-import { World } from "../render/World";
+import { World } from "../elements/World";
 import { HP_BodyId, Vector3 } from "./havok/HavokPhysics";
 
 export class CollisionSphere {
@@ -22,7 +22,7 @@ export class CollisionSphere {
       /* Inertia for mass of 1*/[0.001, 0.001, 0.001],
       /* Inertia Orientation */[0, 0, 0, 1],
     ]);
-    this.world.havok.HP_World_AddBody(this.world.physicWorld, this.body, false);
+    this.world.havok.HP_World_AddBody(this.world.physic, this.body, false);
     this.world.havok.HP_Body_SetMotionType(this.body, this.world.havok.MotionType.DYNAMIC);
 
   }

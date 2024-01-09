@@ -1,10 +1,10 @@
 import * as THREE from "three";
 import { getHavok } from "../physic/getHavok";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
-import pcssFragment from "./pcss.fragment.glsl";
-import pcssGetShadowFragment from "./pcssGetShadow.fragment.glsl";
+import pcssFragment from "../render/pcss.fragment.glsl";
+import pcssGetShadowFragment from "../render/pcssGetShadow.fragment.glsl";
 import { HP_WorldId } from "../physic/havok/HavokPhysics";
-import { DEBUG, ORBIT_CONTROL, SHADOW, SOFT_SHADOW } from "../config";
+import { DEBUG, ORBIT_CONTROL, SHADOW, SOFT_SHADOW } from "../../config";
 
 // Soft shadows
 // https://github.com/mrdoob/three.js/blob/master/examples/webgl_shadowmap_pcss.html
@@ -25,7 +25,7 @@ export class World {
   controls?: OrbitControls
 
   havok: Awaited<ReturnType<typeof getHavok>>
-  physicWorld: HP_WorldId
+  physic: HP_WorldId
 
   constructor(havok: Awaited<ReturnType<typeof getHavok>>) {
 
@@ -33,8 +33,8 @@ export class World {
 
     // Physic
     this.havok = havok;
-    this.physicWorld = this.havok.HP_World_Create()[1];
-    this.havok.HP_World_SetGravity(this.physicWorld, [0, -9.81, 0]);
+    this.physic = this.havok.HP_World_Create()[1];
+    this.havok.HP_World_SetGravity(this.physic, [0, -9.81, 0]);
 
     // Scene
     this.scene = new THREE.Scene();
@@ -136,8 +136,8 @@ export class World {
     }
 
     // Physic
-    if (this.havok && this.physicWorld) {
-      this.havok.HP_World_Step(this.physicWorld, delta);
+    if (this.havok && this.physic) {
+      this.havok.HP_World_Step(this.physic, delta);
     }
   }
 

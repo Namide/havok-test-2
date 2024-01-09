@@ -9,7 +9,7 @@ export default defineConfig({
       output: {
         manualChunks: (id) => {
           console.log(id);
-          if (id.includes("playcanvas")) {
+          if (id.includes("three")) {
             return "render";
           }
 
