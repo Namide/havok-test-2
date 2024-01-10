@@ -113,7 +113,7 @@ export async function initHome() {
     for (const update of updates) {
       update();
     }
-    world.render();
+    world.render(player.render.mesh);
   }
 
   return {

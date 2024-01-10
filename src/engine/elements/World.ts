@@ -1,10 +1,9 @@
 import * as THREE from "three";
 import { Havok, getHavok } from "../physic/getHavok";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
-import pcssFragment from "../render/pcss.fragment.glsl";
-import pcssGetShadowFragment from "../render/pcssGetShadow.fragment.glsl";
 import { HP_WorldId } from "../physic/havok/HavokPhysics";
 import { DEBUG, ORBIT_CONTROL, SHADOW, SOFT_SHADOW } from "../../config";
+import { ShadowLight } from "../render/ShadowLight";
 
 // Soft shadows
 // https://github.com/mrdoob/three.js/blob/master/examples/webgl_shadowmap_pcss.html
@@ -23,6 +22,7 @@ export class World {
   clock: THREE.Clock
   delta = 0
 
+  shadowLight: ShadowLight = new ShadowLight()
   controls?: OrbitControls
 
   havok: Havok
@@ -58,24 +58,9 @@ export class World {
     this.renderer.setSize(this.screenSize.width, this.screenSize.height, false);
 
     // Shadow
-    if (SOFT_SHADOW && SHADOW) {
-      const shader = THREE.ShaderChunk.shadowmap_pars_fragment
-        .replace(
-          "#ifdef USE_SHADOWMAP",
-          `#ifdef USE_SHADOWMAP
-  ${pcssFragment}`,
-        )
-        .replace(
-          "#if defined( SHADOWMAP_TYPE_PCF )",
-          `${pcssGetShadowFragment}
-  #if defined( SHADOWMAP_TYPE_PCF )`,
-        );
-
-      THREE.ShaderChunk.shadowmap_pars_fragment = shader;
-    }
-    if (SHADOW) {
-      this.renderer.shadowMap.enabled = true;
-    }
+    this.shadowLight.init({
+      world: this
+    })
 
     // const mouseEmitter = await createMouseEmitter({
     //   screenSize,
@@ -96,27 +81,7 @@ export class World {
       // });
     }
 
-    // Lights
-    this.scene.add(new THREE.AmbientLight(0xaaaaaa, 3));
-    const light = new THREE.DirectionalLight(0xf0f6ff, 4.5);
-    light.position.set(2, 8, 4);
-    if (SHADOW) {
-      light.castShadow = true;
-      light.shadow.mapSize.width = 1024;
-      light.shadow.mapSize.height = 1024;
-      light.shadow.camera.far = 15;
-      light.shadow.camera.near = 1;
-      light.shadow.camera.top = 15;
-      light.shadow.camera.bottom = -15;
-      light.shadow.camera.left = 15;
-      light.shadow.camera.right = -15;
-      if (DEBUG) {
-        this.scene.add(new THREE.CameraHelper(light.shadow.camera));
-      }
-    } else if (DEBUG) {
-      this.scene.add(new THREE.DirectionalLightHelper(light));
-    }
-    this.scene.add(light);
+
 
     window.addEventListener("resize", this.resize);
   }
@@ -142,7 +107,10 @@ export class World {
     }
   }
 
-  render() {
+  render(center?: THREE.Object3D) {
+    if (center) {
+      this.shadowLight.center(center)
+    }
     this.renderer.render(this.scene, this.camera);
   }
 }

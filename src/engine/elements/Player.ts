@@ -94,7 +94,7 @@ export class Player {
 
   updateControls() {
     const VELOCITY_GROUND = 2
-    const VELOCITY_AIR = 0.25
+    const VELOCITY_AIR = 0.5
     const JUMP_POWER = 0.125
 
     const velocity = this.physic.getVelocity()
