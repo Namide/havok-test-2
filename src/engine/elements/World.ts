@@ -21,6 +21,7 @@ export class World {
   scene: THREE.Scene
   camera: THREE.PerspectiveCamera
   clock: THREE.Clock
+  delta = 0
 
   controls?: OrbitControls
 
@@ -129,7 +130,7 @@ export class World {
   }
 
   update() {
-    const delta = this.clock.getDelta();
+    this.delta = this.clock.getDelta();
     // mouseEmitter.testHover();
     if (this.controls) {
       this.controls.update();
@@ -137,7 +138,7 @@ export class World {
 
     // Physic
     if (this.havok && this.physic) {
-      this.havok.HP_World_Step(this.physic, delta);
+      this.havok.HP_World_Step(this.physic, this.delta);
     }
   }
 

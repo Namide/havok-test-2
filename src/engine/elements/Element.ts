@@ -1,12 +1,12 @@
 import * as THREE from "three";
 import { World } from "./World";
 import { Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
-import { PhysicElement, SizeByShape } from "../physic/PhysicElement";
-import { PhysicMotionType, PhysicShapeType } from "../physic/PhysicTypes";
+import { PhysicElement } from "../physic/PhysicElement";
 import { RenderElement } from "../render/RenderElement";
+import { PhysicMotionType, ShapeType, SizeByShape } from "../../types";
 
 export class Element<
-  CurrentPhysicShapeType extends PhysicShapeType,
+  CurrentPhysicShapeType extends ShapeType,
   CurrentSize = SizeByShape[CurrentPhysicShapeType]
 > {
   render: RenderElement<CurrentPhysicShapeType>
@@ -43,7 +43,8 @@ export class Element<
       size,
       rotation,
       shapeType: shape,
-      motionType: PhysicMotionType.Dynamic
+      motionType: PhysicMotionType.Dynamic,
+      massRatio: 3
     })
 
     this.update = this.update.bind(this)

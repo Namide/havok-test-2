@@ -7,6 +7,7 @@ export class Controller {
   isLeft = false
   isRight = false
   isBottom = false
+  isAction1 = false
   joystick?: nipplejs.JoystickManager
   vector?: { x: number, y: number }
 
@@ -130,8 +131,10 @@ export class Controller {
       case "ArrowDown":
         this.isBottom = true
         break;
+      case " ":
+        this.isAction1 = true
+        break
     }
-
     if (this.joystick) {
       for (const joystick of this.joystick as unknown as (nipplejs.Joystick)[]) {
         joystick.remove()
@@ -154,6 +157,9 @@ export class Controller {
       case "ArrowDown":
         this.isBottom = false
         break;
+      case " ":
+        this.isAction1 = false
+        break
     }
   }
 

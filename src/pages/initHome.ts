@@ -4,8 +4,9 @@ import { getCheckerTexture } from "../engine/render/textures";
 import { Ground } from "../engine/elements/Ground";
 import { getHavok } from "../engine/physic/getHavok";
 import { Quaternion } from "../engine/physic/havok/HavokPhysics";
-import { PhysicShapeType } from "../engine/physic/PhysicTypes";
 import { Element } from "../engine/elements/Element";
+import { Player } from "../engine/elements/Player";
+import { ShapeType } from "../types";
 
 const GROUND_SIZE = 20;
 
@@ -31,13 +32,22 @@ export async function initHome() {
   const ground = new Ground(world, texture)
   world.scene.add(ground.mesh);
 
+  // Player
+  const player = new Player({
+    world,
+    texture,
+    position: [0, 3, 0],
+  });
+  world.scene.add(player.render.mesh);
+  updates.push(player.update);
+
   // Sphere
   for (let i = 0; i < 10; i++) {
 
     const sphere = new Element({
       world,
       texture,
-      shape: PhysicShapeType.Sphere,
+      shape: ShapeType.Sphere,
       position: [rand(1, -1), rand(8, 4), rand(1, -1)],
       size: rand(0.2, 0.1),
     });
@@ -81,7 +91,7 @@ export async function initHome() {
     const cube = new Element({
       world,
       texture,
-      shape: PhysicShapeType.Box,
+      shape: ShapeType.Box,
       position: [
         rand(GROUND_SIZE * 0.48, -GROUND_SIZE * 0.48),
         rand(8, 4),
@@ -98,16 +108,11 @@ export async function initHome() {
   world.renderer.setAnimationLoop(tick);
 
   function tick(/* time: number */) {
-    // required if controls.enableDamping or controls.autoRotate are set to true
+    player.updateControls();
     world.update();
-
-    // Ste the simulation forward.
-
-    // Get and print the rigid-body's position.
     for (const update of updates) {
       update();
     }
-
     world.render();
   }
 

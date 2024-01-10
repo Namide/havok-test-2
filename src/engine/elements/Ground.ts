@@ -96,7 +96,7 @@ export class Ground {
     //   position,
     //   size,
     //   rotation,
-    //   shapeType: PhysicShapeType.Box,
+    //   shapeType: ShapeType.Box,
     //   motionType: PhysicMotionType.Static
     // })
 

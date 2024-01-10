@@ -2,10 +2,10 @@ import * as THREE from "three";
 import { SHADOW } from "../../config";
 import { World } from "../elements/World";
 import { Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
-import { PhysicShapeType } from "../physic/PhysicTypes";
-import { SizeByShape } from "../physic/PhysicElement";
+import { CapsuleSize, ShapeType, SizeByShape } from "../../types";
+import { vector3 } from "../../constants";
 
-export class RenderElement<CurrentPhysicShapeType extends PhysicShapeType, CurrentSize = SizeByShape[CurrentPhysicShapeType]> {
+export class RenderElement<CurrentPhysicShapeType extends ShapeType, CurrentSize = SizeByShape[CurrentPhysicShapeType]> {
   world: World
   mesh: THREE.Mesh
 
@@ -35,10 +35,14 @@ export class RenderElement<CurrentPhysicShapeType extends PhysicShapeType, Curre
     });
 
     let geometry: THREE.BufferGeometry
-    if (shape === PhysicShapeType.Box) {
+    if (shape === ShapeType.Box) {
       geometry = new THREE.BoxGeometry(...size as Vector3);
-    } else {
+    } else if (shape === ShapeType.Sphere) {
       geometry = new THREE.SphereGeometry(size as number);
+    } else { // Capsule
+      const typedSize = size as CapsuleSize
+      const length = new THREE.Vector3(...typedSize[0]).distanceTo(vector3.set(...typedSize[1]))
+      geometry = new THREE.CapsuleGeometry(typedSize[2], length, 2, 9)
     }
 
     this.mesh = new THREE.Mesh(geometry, material);
