@@ -1,24 +1,38 @@
 import * as THREE from "three";
 import { ImprovedNoise } from 'three/addons/math/ImprovedNoise.js';
 
-let seed = Math.PI / 4;
-function RNG() {
-  const x = Math.sin(seed++) * 10000;
-  return x - Math.floor(x);
-}
+// let seed = Math.PI / 4;
+// function RNG() {
+//   const x = Math.sin(seed++) * 10000;
+//   return x - Math.floor(x);
+// }
 
-export function generateHeight(width: number, height: number, depth: number, data: Float32Array) {
+export function generateHeight({
+  width,
+  height,
+  depth,
+  data,
+  x,
+  y,
+}: {
+  width: number,
+  height: number,
+  depth: number,
+  data: Float32Array,
+  x: number,
+  y: number,
+}) {
   const size = width * height
   // const data = new Uint8Array(size);
   const perlin = new ImprovedNoise()
-  const z = Math.random() * 100;
+  // const z = Math.random() * 100;
 
   let quality = 1;
   for (let j = 0; j < 4; j++) {
     for (let i = 0; i < size; i++) {
-      const x = data[i * 3] // i % width
-      const y = data[i * 3 + 1] // ~ ~(i / width);
-      data[i * 3 + 2] += Math.abs(perlin.noise(x / quality, y / quality, z) * quality * 1.75) * (depth / 256);
+      const realX = x + data[i * 3] // i % width
+      const realY = -y + data[i * 3 + 1] // ~ ~(i / width);
+      data[i * 3 + 2] += Math.abs(perlin.noise(realX / quality, realY / quality, 0) * quality * 1.75) * (depth / 256);
     }
     quality *= 5;
   }
@@ -26,7 +40,7 @@ export function generateHeight(width: number, height: number, depth: number, dat
   return data;
 }
 
-export function generateTexture(data: Uint8Array, width: number, height: number) {
+export function generateTexture(data: Float32Array, width: number, height: number) {
 
   const vector3 = new THREE.Vector3(0, 0, 0);
 
@@ -57,7 +71,6 @@ export function generateTexture(data: Uint8Array, width: number, height: number)
     imageData[i + 1] = (32 + shade * 96) * (0.5 + data[j] * 0.007);
     imageData[i + 2] = (shade * 96) * (0.5 + data[j] * 0.007);
   }
-
   context.putImageData(image, 0, 0);
 
   // Scaled 4x
@@ -85,5 +98,9 @@ export function generateTexture(data: Uint8Array, width: number, height: number)
 
   context.putImageData(image, 0, 0);
 
-  return canvasScaled;
+  const texture = new THREE.CanvasTexture(canvasScaled);
+  texture.wrapS = THREE.ClampToEdgeWrapping;
+  texture.wrapT = THREE.ClampToEdgeWrapping;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
 }

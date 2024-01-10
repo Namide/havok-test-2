@@ -2,6 +2,10 @@ import * as THREE from "three";
 
 let checkerTexture: THREE.Texture;
 
+export const getGroundNormalTexture = () => {
+  return new THREE.TextureLoader().load(`${import.meta.env.BASE_URL}assets/ground-normal.jpg`);
+}
+
 export const getCheckerTexture = async () => {
   if (!checkerTexture) {
     checkerTexture = await loadTexture(

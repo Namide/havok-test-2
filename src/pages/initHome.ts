@@ -30,7 +30,7 @@ export async function initHome() {
 
   // Ground
   const ground = new Ground(world, texture)
-  world.scene.add(ground.mesh);
+  world.scene.add(ground.group);
 
   // Player
   const player = new Player({
@@ -113,7 +113,8 @@ export async function initHome() {
     for (const update of updates) {
       update();
     }
-    world.render(player.render.mesh);
+    world.render(player.render.mesh, ground.group)
+    ground.update(player.render.mesh.position.x, player.render.mesh.position.z)
   }
 
   return {

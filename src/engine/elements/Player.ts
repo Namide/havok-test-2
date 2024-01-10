@@ -5,7 +5,6 @@ import { PhysicElement } from "../physic/PhysicElement";
 import { RenderElement } from "../render/RenderElement";
 import { PhysicMotionType, ShapeType } from "../../types";
 import { Controller } from "../../events/Controller";
-import { vector3 } from "../../constants";
 
 export class Player {
   world: World

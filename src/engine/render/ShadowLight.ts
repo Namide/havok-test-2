@@ -5,10 +5,11 @@ import pcssFragment from "../render/pcss.fragment.glsl";
 import pcssGetShadowFragment from "../render/pcssGetShadow.fragment.glsl";
 import { vector3 } from "../../constants";
 
-const LIGHT_POSITION = new THREE.Vector3(2, 8, 4)
+const LIGHT_POSITION = new THREE.Vector3(4, 4, 8)
 const TARGET_POSITION = new THREE.Vector3(0, 0, 0)
-const SHADOW_SIDE = 5
-const SHADOW_DEPTH = 4
+const SHADOW_SIDE = 10
+const SHADOW_DEPTH = 12
+const SHADOW_RESOLUTION = 1024
 
 export class ShadowLight {
 
@@ -49,10 +50,11 @@ export class ShadowLight {
 
     if (SHADOW) {
       this.light.castShadow = true;
-      this.light.shadow.mapSize.width = 1024;
-      this.light.shadow.mapSize.height = 1024;
+      this.light.shadow.radius = 4
+      this.light.shadow.mapSize.width = SHADOW_RESOLUTION;
+      this.light.shadow.mapSize.height = SHADOW_RESOLUTION;
       this.light.shadow.camera.far = distance + SHADOW_DEPTH;
-      this.light.shadow.camera.near = distance - SHADOW_DEPTH;
+      this.light.shadow.camera.near = Math.max(1, distance - SHADOW_DEPTH);
       this.light.shadow.camera.top = SHADOW_SIDE
       this.light.shadow.camera.bottom = -SHADOW_SIDE;
       this.light.shadow.camera.left = SHADOW_SIDE;
@@ -66,11 +68,11 @@ export class ShadowLight {
     world.scene.add(this.light);
   }
 
-  center(target: THREE.Object3D) {
+  center(target: THREE.Vector3) {
     if (SHADOW && this.light) {
-      vector3.copy(target.position).add(LIGHT_POSITION)
-      this.light.position.copy(vector3);
-      this.light.target = target;
+      this.light.position.copy(target).add(LIGHT_POSITION)
+      this.light.target.position.copy(target)
+      this.light.target.updateMatrixWorld()
     }
   }
 }

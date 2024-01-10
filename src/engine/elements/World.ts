@@ -1,9 +1,12 @@
 import * as THREE from "three";
-import { Havok, getHavok } from "../physic/getHavok";
+import { Havok } from "../physic/getHavok";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 import { HP_WorldId } from "../physic/havok/HavokPhysics";
-import { DEBUG, ORBIT_CONTROL, SHADOW, SOFT_SHADOW } from "../../config";
+import { CAMERA_FOLLOW, CAMERA_POSITION, ORBIT_CONTROL } from "../../config";
 import { ShadowLight } from "../render/ShadowLight";
+import { vector3 } from "../../constants";
+
+const raycaster = new THREE.Raycaster();
 
 // Soft shadows
 // https://github.com/mrdoob/three.js/blob/master/examples/webgl_shadowmap_pcss.html
@@ -45,9 +48,8 @@ export class World {
       1,
       1000,
     );
-    this.camera.position.z = 5;
-    this.camera.position.y = 10;
-    this.camera.lookAt(new THREE.Vector3(0, 1, 0));
+    this.camera.position.set(...CAMERA_POSITION)
+    this.camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     // Renderer
     this.renderer = new THREE.WebGLRenderer({
@@ -107,9 +109,24 @@ export class World {
     }
   }
 
-  render(center?: THREE.Object3D) {
-    if (center) {
-      this.shadowLight.center(center)
+  render(center?: THREE.Object3D, ground?: THREE.Group) {
+    if (center && ground) {
+
+      raycaster.set(center.position, vector3.set(0, -1, 0).clone())
+      const [gr] = raycaster.intersectObjects(ground.children)
+      const point = gr?.point
+      const target = point ?? center.position
+
+      // Light
+      this.shadowLight.center(target)
+
+      // Camera follow
+      if (CAMERA_FOLLOW && !ORBIT_CONTROL) {
+        if (point) {
+          this.camera.position.copy(vector3.set(...CAMERA_POSITION).add(point))
+          this.camera.lookAt(point);
+        }
+      }
     }
     this.renderer.render(this.scene, this.camera);
   }

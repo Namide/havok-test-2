@@ -5,6 +5,7 @@ import { HP_BodyId, Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
 import { euler, quaternion } from "../../constants";
 import { Havok } from "../physic/getHavok";
 import { generateHeight } from "./GroundMountain";
+import { getGroundNormalTexture } from "../render/textures";
 
 const PRECISION = 8
 
@@ -43,11 +44,18 @@ function getTriangles(havok: Havok, indices: number[]): PluginMemoryRef {
   return { offset: bufferBegin, numObjects: indices.length };
 }
 
-export class Ground {
+class GroundPart {
+  world: World
   mesh: THREE.Mesh
   body: HP_BodyId
 
-  constructor(world: World, texture: THREE.Texture) {
+  x: number
+  y: number
+
+  constructor(world: World, x: number, y: number, material: THREE.Material) {
+    this.world = world
+    this.x = x
+    this.y = y
 
     const rotation: Quaternion = quaternion
       .setFromEuler(
@@ -56,21 +64,26 @@ export class Ground {
       )
       .toArray() as Quaternion;
     const [width, depth, height] = GROUND_SIZE
-    const position: Vector3 = [0, -depth / 4, 0] as const
+    const position: Vector3 = [x, -depth / 4, y] as const
+
+
+    // Perlin noise
+    const geometry = new THREE.PlaneGeometry(width, height, PRECISION, PRECISION);
+    generateHeight({
+      width: PRECISION + 1,
+      height: PRECISION + 1,
+      depth,
+      data: geometry.getAttribute('position').array as Float32Array,
+      x,
+      y,
+    })
 
 
     // Render
-
-    const material = new (
-      SHADOW ? THREE.MeshLambertMaterial : THREE.MeshBasicMaterial
-    )({
-      map: texture,
-    });
-
-    const geometry = new THREE.PlaneGeometry(width, height, PRECISION, PRECISION);
-
     this.mesh = new THREE.Mesh(geometry, material);
 
+
+    // Shadow
     if (SHADOW) {
       this.mesh.receiveShadow = true;
       this.mesh.castShadow = true;
@@ -81,76 +94,122 @@ export class Ground {
     }
 
 
-
-
-    // Perlin noise
-    generateHeight(PRECISION + 1, PRECISION + 1, depth, this.mesh.geometry.getAttribute('position').array as Float32Array)
-    // console.log(this.mesh.geometry.getAttribute('position').array)
-
-
-
-
-
-    // this.physic = new PhysicElement({
-    //   world,
-    //   position,
-    //   size,
-    //   rotation,
-    //   shapeType: ShapeType.Box,
-    //   motionType: PhysicMotionType.Static
-    // })
-
-
     // Physic
-
-    this.body = world.havok.HP_Body_Create()[1];
-
-    /** Creates a geometry representing a height map.
-     * `heights` should be a buffer of floats, of size (numXSamples * numZSamples), describing heights at (x,z) of
-     * [(0,0), (1,0), ... (numXSamples-1, 0), (0, 1), (1, 1) ... (numXSamples-1, 1) ... (numXSamples-1, numZSamples-)]
-     * `scale` is a vector, whose X and Z components convert from integer space to shape space, while the Y coordinate supplies a scaling factor for the height. */
-    // const shape = world.havok.HP_Shape_CreateHeightField(PRECISION, PRECISION, size, new Float32Array([0, 0, 0, 0]))
-
-    // Creates a geometry representing the surface of a mesh. Note, like CreateConvexHull, vertices should be a buffer of Vector, allocated using _malloc. Similarly, triangles should be triples of 32-bit integers which index into vertices.
-
-    // // Fix strange physic engine decal
-    // const geom = geometry.clone()
-    // matrix4.identity()
-    // geometry.getAttribute('position').applyMatrix4(matrix4.makeTranslation(width, height, 0))
+    this.body = this.world.havok.HP_Body_Create()[1];
 
     const vertices = geometry.getAttribute('position').array
-    const havokPositions = getVertices(world.havok, vertices as Float32Array);
+    const havokPositions = getVertices(this.world.havok, vertices as Float32Array);
     const numVec3s = havokPositions.numObjects / 3;
-    const havokTriangles = getTriangles(world.havok, [...(geometry.getIndex()?.array || [])])
+    const havokTriangles = getTriangles(this.world.havok, [...(geometry.getIndex()?.array || [])])
     const numTriangles = havokTriangles.numObjects / 3;
-    const shape = world.havok.HP_Shape_CreateMesh(havokPositions.offset, numVec3s, havokTriangles.offset, numTriangles)[1]
+    const shape = this.world.havok.HP_Shape_CreateMesh(havokPositions.offset, numVec3s, havokTriangles.offset, numTriangles)[1]
 
     // @ts-ignore
-    world.havok._free(havokTriangles)
+    this.world.havok._free(havokTriangles)
 
     // @ts-ignore
-    world.havok._free(havokPositions)
+    this.world.havok._free(havokPositions)
 
-
-    // const shape = world.havok.HP_Shape_CreateBox([0, 0, 0], [0, 0, 0, 1], [width, height, 0])[1]
-
-    world.havok.HP_Body_SetShape(this.body, shape);
-    world.havok.HP_Body_SetQTransform(this.body, [position, rotation]);
-    world.havok.HP_Body_SetMotionType(this.body, world.havok.MotionType.STATIC);
-    // world.havok.HP_Body_SetMassProperties(this.body, [
+    this.world.havok.HP_Body_SetShape(this.body, shape);
+    this.world.havok.HP_Body_SetQTransform(this.body, [position, rotation]);
+    this.world.havok.HP_Body_SetMotionType(this.body, this.world.havok.MotionType.STATIC);
+    // this.world.havok.HP_Body_SetMassProperties(this.body, [
     //   /* center of mass */[0, 0, 0],
     //   /* Mass */ mass,
     //   /* Inertia for mass of 1*/[0.01, 0.01, 0.01],
     //   /* Inertia Orientation */[0, 0, 0, 1],
     // ]);
-    world.havok.HP_World_AddBody(world.physic, this.body, false);
+    this.world.havok.HP_World_AddBody(this.world.physic, this.body, false);
 
 
     // Update
-
-    const transform = world.havok.HP_Body_GetQTransform(this.body)[1];
+    const transform = this.world.havok.HP_Body_GetQTransform(this.body)[1];
     this.mesh.position.set(...transform[0]);
     this.mesh.quaternion.set(...transform[1]);
+  }
+
+  dispose() {
+    this.mesh.geometry.dispose()
+    this.mesh.parent?.remove(this.mesh)
+    this.world.havok.HP_Body_Release(this.body);
+  }
+}
+
+export class Ground {
+  group: THREE.Group = new THREE.Group()
+  world: World
+  list: GroundPart[] = []
+
+  material: THREE.Material
+
+  constructor(world: World, texture: THREE.Texture) {
+
+    this.world = world
+
+
+    // Render
+    // const texture2 = generateTexture(data, PRECISION + 1, PRECISION + 1)
+    this.material = SHADOW ?
+      new THREE.MeshLambertMaterial({
+        // map: texture,
+        color: 0xCCCCCC,
+        bumpMap: getGroundNormalTexture()
+      }) :
+      new THREE.MeshBasicMaterial({
+        map: texture
+      });
+
+
+    // Physic
+
+    // this.body = []
+
+    this.addGround(0, 0)
+    this.addGround(0, GROUND_SIZE[2])
+    // this.addGround(GROUND_SIZE[0], GROUND_SIZE[2])
+    // this.addGround(GROUND_SIZE[0], 0)
+  }
+
+  update(x: number, y: number) {
+
+    const middle = [
+      Math.round(x / GROUND_SIZE[0]),
+      Math.round(y / GROUND_SIZE[2])
+    ]
+
+    const arround: { x: number, y: number }[] = []
+    for (let i = -1; i < 2; i++) {
+      for (let j = -1; j < 2; j++) {
+        arround.push({
+          x: (middle[0] + i) * GROUND_SIZE[0],
+          y: (middle[1] + j) * GROUND_SIZE[2]
+        })
+      }
+    }
+
+    const toAdd = arround.filter(ground => !this.list.find(({ x, y }) => x === ground.x && y === ground.y))
+    const toRemove = this.list.filter(ground => !arround.find(({ x, y }) => x === ground.x && y === ground.y))
+
+    for (const { x, y } of toRemove) {
+      this.removeGround(x, y)
+    }
+
+    for (const { x, y } of toAdd) {
+      this.addGround(x, y)
+    }
+  }
+
+  addGround(x: number, y: number) {
+    const groundPart = new GroundPart(this.world, x, y, this.material)
+    this.group.add(groundPart.mesh)
+    this.list.push(groundPart)
+  }
+
+  removeGround(x: number, y: number) {
+    const index = this.list.findIndex(ground => ground.x === x && ground.y === y)
+    const groundPart = this.list[index]
+    groundPart.dispose()
+    this.list.splice(index, 1)
   }
 }
 
