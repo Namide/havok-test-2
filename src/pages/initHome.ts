@@ -38,7 +38,7 @@ export async function initHome() {
   const player = new Player({
     world,
     texture,
-    position: [0, 3, 0],
+    position: [5, 6, 0],
   });
   world.render.scene.add(player.render.mesh);
   updates.push(player.update);

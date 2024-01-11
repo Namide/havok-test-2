@@ -165,7 +165,6 @@ export class Ground {
     // this.body = []
 
     this.addGround(0, 0)
-    this.addGround(0, GROUND_SIZE[2])
     // this.addGround(GROUND_SIZE[0], GROUND_SIZE[2])
     // this.addGround(GROUND_SIZE[0], 0)
   }

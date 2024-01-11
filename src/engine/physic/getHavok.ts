@@ -4,6 +4,7 @@ import HavokPhysics, {
   ConstraintAxisLimitMode,
   type HavokPhysicsWithBindings,
   MotionType,
+  EventType,
 } from "./havok/HavokPhysics";
 
 // https://github.com/N8python/havokDemo
@@ -34,6 +35,13 @@ let havok: HavokPhysicsWithBindings & {
     ANGULAR_Z: ConstraintAxis.ANGULAR_Z;
     LINEAR_DISTANCE: ConstraintAxis.LINEAR_DISTANCE;
   };
+  EventType: {
+    COLLISION_STARTED: { value: EventType.COLLISION_STARTED };
+    COLLISION_CONTINUED: { value: EventType.COLLISION_CONTINUED };
+    COLLISION_FINISHED: { value: EventType.COLLISION_FINISHED };
+    TRIGGER_ENTERED: { value: EventType.TRIGGER_ENTERED };
+    TRIGGER_EXITED: { value: EventType.TRIGGER_EXITED };
+  }
 };
 
 export async function getHavok() {

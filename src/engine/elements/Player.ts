@@ -54,6 +54,26 @@ export class Player {
       shapeType: ShapeType.Capsule,
       motionType: PhysicMotionType.Dynamic
     })
+
+
+
+    const collideEvents = /* this.world.physic.havok.EventType.COLLISION_STARTED.value | */ this.world.physic.havok.EventType.COLLISION_CONTINUED.value /* | this.world.physic.havok.EventType.COLLISION_FINISHED.value */;
+    // console.log(this.world.physic.havok.EventType.COLLISION_STARTED)
+    this.world.physic.havok.HP_Body_SetEventMask(this.physic.body, collideEvents);
+
+
+
+
+
+    // if (body._pluginDataInstances && body._pluginDataInstances.length) {
+    //   body._pluginDataInstances.forEach((bodyId) => {
+    //     this._hknp.HP_Body_SetEventMask(bodyId.hpBodyId, enabled ? collideEvents : 0);
+    //   });
+    // } else if (body._pluginData) {
+    //   this._hknp.HP_Body_SetEventMask(body._pluginData.hpBodyId, enabled ? collideEvents : 0);
+    // }
+
+
     // Material
     // world.physic.havok.HP_Shape_SetMaterial(this.physic.shape, [
     //   /* static friction */ 100, // 0.5
@@ -91,12 +111,26 @@ export class Player {
     this.update()
   }
 
+  dispose() {
+    this.world.physic.havok.HP_Body_SetEventMask(this.physic.body, 0);
+    this.physic.dispose()
+    // this.render.dispose()
+  }
+
   updateControls() {
     const VELOCITY_GROUND = 2
     const VELOCITY_AIR = 0.5
-    const JUMP_POWER = 0.125
+    const JUMP_POWER = 5
 
     const velocity = this.physic.getVelocity()
+
+    const onGround = this.world.physic.collisions.find(event => event.a.body[0] === this.physic.body[0] && event.a.normal[1] < -0.5)
+    if (onGround) {
+      this.isJump = false
+    } else {
+      this.isJump = true
+      this.isFalling = velocity[1] < 0
+    }
 
     // Calculate move
     const move = new THREE.Vector3(0, 0, 0)
@@ -116,6 +150,18 @@ export class Player {
       if (move.z > 0) { velocity[2] = Math.max(move.z, velocity[2]) }
       if (move.z < 0) { velocity[2] = Math.min(move.z, velocity[2]) }
     }
+
+    // Apply jump to velocity
+    if (this.controller.isAction1 && !this.isJump) {
+      // this.world.physic.havok.HP_Body_ApplyImpulse(this.physic.body, this.render.mesh.position.toArray(), [0, JUMP_POWER, 0])
+      velocity[1] = JUMP_POWER
+    } /* else if (this.isJump && !this.isFalling && velocity[1] < 0) {
+      this.isFalling = true
+    } else if (this.isJump && this.isFalling && velocity[1] > 0) {
+      this.isJump = false
+      this.isFalling = false
+    } */
+
     this.physic.setVelocity(velocity)
 
     // Disable rotation
@@ -124,18 +170,6 @@ export class Player {
       this.render.mesh.position.toArray(),
       [0, 0, 0, 1]
     )
-
-    // Jump
-    if (this.controller.isAction1 && !this.isJump) {
-      this.isJump = true
-      this.isFalling = false
-      this.world.physic.havok.HP_Body_ApplyImpulse(this.physic.body, this.render.mesh.position.toArray(), [0, JUMP_POWER, 0])
-    } else if (this.isJump && !this.isFalling && velocity[1] < 0) {
-      this.isFalling = true
-    } else if (this.isJump && this.isFalling && velocity[1] > 0) {
-      this.isJump = false
-      this.isFalling = false
-    }
   }
 
   update() {
