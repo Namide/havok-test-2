@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { euler, quaternion } from "../constants";
 import { World } from "../engine/elements/World";
 import { getCheckerTexture } from "../engine/render/textures";
-import { Ground } from "../engine/elements/Ground";
+import { Ground } from "../engine/elements/ground/Ground";
 import { getHavok } from "../engine/physic/getHavok";
 import { Quaternion } from "../engine/physic/havok/HavokPhysics";
 import { Element } from "../engine/elements/Element";

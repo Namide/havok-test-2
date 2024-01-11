@@ -8,5 +8,5 @@ export const ORBIT_CONTROL = false;
 export const CAMERA_FOLLOW = true;
 export const CAMERA_POSITION: Vector3 = [0, 10, 5] as const;
 
-export const GROUND_SIZE: Vector3 = [20, 30, 20] as const;
+export const GROUND_SIZE: Vector3 = [10, 30, 10] as const;
 export const DEBUG = true;

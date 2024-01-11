@@ -1,15 +1,25 @@
 import * as THREE from "three";
-import { World } from "./World";
-import { GROUND_SIZE, SHADOW } from "../../config";
-import { HP_BodyId, Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
-import { euler, quaternion } from "../../constants";
-import { Havok } from "../physic/getHavok";
-import { generateHeight } from "./GroundMountain";
-import { getGroundNormalTexture } from "../render/textures";
+import { GROUND_SIZE, SHADOW } from "../../../config"
+import { euler, quaternion } from "../../../constants"
+import { HP_BodyId, Quaternion, Vector3 } from "../../physic/havok/HavokPhysics"
+import { World } from "../World"
+import { generateHeight } from "./heightMap"
+import { Havok } from "../../physic/getHavok";
 
 const PRECISION = 8
 
-// https://github.com/BabylonJS/Babylon.js/blob/48cf7b374a7bbee9f3bef02f2992715ed683cf98/packages/dev/core/src/Physics/v2/Plugins/havokPlugin.ts
+/**
+ * Helper to keep a reference to plugin memory.
+ * Used to avoid https://github.com/emscripten-core/emscripten/issues/7294
+ * @internal
+ */
+interface PluginMemoryRef {
+  /** The offset from the beginning of the plugin's heap */
+  offset: number;
+  /** The number of identically-sized objects the buffer contains */
+  numObjects: number;
+}
+
 
 function getVertices(havok: Havok, vertices: Float32Array) {
 
@@ -44,7 +54,7 @@ function getTriangles(havok: Havok, indices: number[]): PluginMemoryRef {
   return { offset: bufferBegin, numObjects: indices.length };
 }
 
-class GroundPart {
+export class Part {
   world: World
   mesh: THREE.Mesh
   body: HP_BodyId
@@ -133,93 +143,4 @@ class GroundPart {
     this.mesh.parent?.remove(this.mesh)
     this.world.physic.havok.HP_Body_Release(this.body);
   }
-}
-
-export class Ground {
-  group: THREE.Group = new THREE.Group()
-  world: World
-  list: GroundPart[] = []
-
-  material: THREE.Material
-
-  constructor(world: World, texture: THREE.Texture) {
-
-    this.world = world
-
-
-    // Render
-    // const texture2 = generateTexture(data, PRECISION + 1, PRECISION + 1)
-    this.material = SHADOW ?
-      new THREE.MeshLambertMaterial({
-        // map: texture,
-        color: 0xCCCCCC,
-        bumpMap: getGroundNormalTexture()
-      }) :
-      new THREE.MeshBasicMaterial({
-        map: texture
-      });
-
-
-    // Physic
-
-    // this.body = []
-
-    this.addGround(0, 0)
-    // this.addGround(GROUND_SIZE[0], GROUND_SIZE[2])
-    // this.addGround(GROUND_SIZE[0], 0)
-  }
-
-  update(x: number, y: number) {
-
-    const middle = [
-      Math.round(x / GROUND_SIZE[0]),
-      Math.round(y / GROUND_SIZE[2])
-    ]
-
-    const arround: { x: number, y: number }[] = []
-    for (let i = -1; i < 2; i++) {
-      for (let j = -1; j < 2; j++) {
-        arround.push({
-          x: (middle[0] + i) * GROUND_SIZE[0],
-          y: (middle[1] + j) * GROUND_SIZE[2]
-        })
-      }
-    }
-
-    const toAdd = arround.filter(ground => !this.list.find(({ x, y }) => x === ground.x && y === ground.y))
-    const toRemove = this.list.filter(ground => !arround.find(({ x, y }) => x === ground.x && y === ground.y))
-
-    for (const { x, y } of toRemove) {
-      this.removeGround(x, y)
-    }
-
-    for (const { x, y } of toAdd) {
-      this.addGround(x, y)
-    }
-  }
-
-  addGround(x: number, y: number) {
-    const groundPart = new GroundPart(this.world, x, y, this.material)
-    this.group.add(groundPart.mesh)
-    this.list.push(groundPart)
-  }
-
-  removeGround(x: number, y: number) {
-    const index = this.list.findIndex(ground => ground.x === x && ground.y === y)
-    const groundPart = this.list[index]
-    groundPart.dispose()
-    this.list.splice(index, 1)
-  }
-}
-
-/**
- * Helper to keep a reference to plugin memory.
- * Used to avoid https://github.com/emscripten-core/emscripten/issues/7294
- * @internal
- */
-interface PluginMemoryRef {
-  /** The offset from the beginning of the plugin's heap */
-  offset: number;
-  /** The number of identically-sized objects the buffer contains */
-  numObjects: number;
 }

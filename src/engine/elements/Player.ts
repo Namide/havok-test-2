@@ -120,7 +120,7 @@ export class Player {
   updateControls() {
     const VELOCITY_GROUND = 2
     const VELOCITY_AIR = 0.5
-    const JUMP_POWER = 5
+    const JUMP_POWER = 3
 
     const velocity = this.physic.getVelocity()
 
@@ -166,13 +166,14 @@ export class Player {
 
     // Disable rotation
     this.world.physic.havok.HP_Body_SetAngularVelocity(this.physic.body, [0, 0, 0])
-    this.physic.setTransform(
-      this.render.mesh.position.toArray(),
-      [0, 0, 0, 1]
-    )
   }
 
   update() {
+    const [realPosition] = this.world.physic.havok.HP_Body_GetQTransform(this.physic.body)[1]
+    this.physic.setTransform(
+      realPosition,
+      [0, 0, 0, 1]
+    )
     const { position, quaternion } = this.physic.getTransform();
     this.render.mesh.position.set(...position);
     this.render.mesh.quaternion.set(...quaternion);
