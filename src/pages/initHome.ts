@@ -1,3 +1,4 @@
+import * as THREE from "three";
 import { euler, quaternion } from "../constants";
 import { World } from "../engine/elements/World";
 import { getCheckerTexture } from "../engine/render/textures";
@@ -25,12 +26,13 @@ export async function initHome() {
   const havok = await getHavok()
   const texture = await getCheckerTexture()
   const world = new World(havok)
+  const clock = new THREE.Clock();
 
   const updates: (() => void)[] = []
 
   // Ground
   const ground = new Ground(world, texture)
-  world.scene.add(ground.group);
+  world.render.scene.add(ground.group);
 
   // Player
   const player = new Player({
@@ -38,7 +40,7 @@ export async function initHome() {
     texture,
     position: [0, 3, 0],
   });
-  world.scene.add(player.render.mesh);
+  world.render.scene.add(player.render.mesh);
   updates.push(player.update);
 
   // Sphere
@@ -51,15 +53,15 @@ export async function initHome() {
       position: [rand(1, -1), rand(8, 4), rand(1, -1)],
       size: rand(0.2, 0.1),
     });
-    world.scene.add(sphere.render.mesh);
+    world.render.scene.add(sphere.render.mesh);
     updates.push(sphere.update);
 
     // mouseEmitter.over.on(mesh, () => {
-    //   renderWorld.renderer.domElement.style.cursor = "grab";
+    //   renderworld.render.renderer.domElement.style.cursor = "grab";
     // });
 
     // mouseEmitter.out.on(mesh, () => {
-    //   renderWorld.renderer.domElement.style.cursor = "auto";
+    //   renderworld.render.renderer.domElement.style.cursor = "auto";
     // });
 
     // mouseEmitter.click.on(mesh, (target) => {
@@ -82,7 +84,7 @@ export async function initHome() {
   //     mouseEmitter,
   //     renderWorld,
   //   });
-  //   renderWorld.scene.add(card);
+  //   renderworld.render.scene.add(card);
   //   updates.push(update);
   // }
 
@@ -101,19 +103,22 @@ export async function initHome() {
       rotation: getRandomRotation(),
       // mouseEmitter,
     });
-    world.scene.add(cube.render.mesh);
+    world.render.scene.add(cube.render.mesh);
     updates.push(cube.update);
   }
 
-  world.renderer.setAnimationLoop(tick);
+  world.render.renderer.setAnimationLoop(tick);
 
   function tick(/* time: number */) {
+
+    const delta = clock.getDelta();
+
     player.updateControls();
-    world.update();
+    world.tick(delta);
     for (const update of updates) {
       update();
     }
-    world.render(player.render.mesh, ground.group)
+    world.display(player.render.mesh, ground.group)
     ground.update(player.render.mesh.position.x, player.render.mesh.position.z)
   }
 

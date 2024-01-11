@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import { DEBUG, SHADOW, SOFT_SHADOW } from "../../config";
-import { World } from "../elements/World";
 import pcssFragment from "../render/pcss.fragment.glsl";
 import pcssGetShadowFragment from "../render/pcssGetShadow.fragment.glsl";
 import { vector3 } from "../../constants";
@@ -11,14 +10,20 @@ const SHADOW_SIDE = 10
 const SHADOW_DEPTH = 12
 const SHADOW_RESOLUTION = 1024
 
+// Soft shadows
+// https://github.com/mrdoob/three.js/blob/master/examples/webgl_shadowmap_pcss.html
+// https://threejs.org/examples/?q=shado#webgl_shadowmap_pcss
+
 export class ShadowLight {
 
   light?: THREE.DirectionalLight
 
   init({
-    world
+    renderer,
+    scene
   }: {
-    world: World
+    renderer: THREE.WebGLRenderer,
+    scene: THREE.Scene
   }) {
     // Shadows
     if (SOFT_SHADOW && SHADOW) {
@@ -37,11 +42,11 @@ export class ShadowLight {
       THREE.ShaderChunk.shadowmap_pars_fragment = shader;
     }
     if (SHADOW) {
-      world.renderer.shadowMap.enabled = true;
+      renderer.shadowMap.enabled = true;
     }
 
     // Lights
-    world.scene.add(new THREE.AmbientLight(0xAAAAFF, 2));
+    scene.add(new THREE.AmbientLight(0xAAAAFF, 2));
     this.light = new THREE.DirectionalLight(0xFFFFFF, 3);
     this.light.position.copy(LIGHT_POSITION);
     this.light.lookAt(TARGET_POSITION);
@@ -50,7 +55,9 @@ export class ShadowLight {
 
     if (SHADOW) {
       this.light.castShadow = true;
-      this.light.shadow.radius = 4
+      if (!SOFT_SHADOW) {
+        this.light.shadow.radius = 4
+      }
       this.light.shadow.mapSize.width = SHADOW_RESOLUTION;
       this.light.shadow.mapSize.height = SHADOW_RESOLUTION;
       this.light.shadow.camera.far = distance + SHADOW_DEPTH;
@@ -60,12 +67,12 @@ export class ShadowLight {
       this.light.shadow.camera.left = SHADOW_SIDE;
       this.light.shadow.camera.right = -SHADOW_SIDE;
       if (DEBUG) {
-        world.scene.add(new THREE.CameraHelper(this.light.shadow.camera));
+        scene.add(new THREE.CameraHelper(this.light.shadow.camera));
       }
     } else if (DEBUG) {
-      world.scene.add(new THREE.DirectionalLightHelper(this.light));
+      scene.add(new THREE.DirectionalLightHelper(this.light));
     }
-    world.scene.add(this.light);
+    scene.add(this.light);
   }
 
   center(target: THREE.Vector3) {

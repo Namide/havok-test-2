@@ -55,18 +55,18 @@ export class Player {
       motionType: PhysicMotionType.Dynamic
     })
     // Material
-    // world.havok.HP_Shape_SetMaterial(this.physic.shape, [
+    // world.physic.havok.HP_Shape_SetMaterial(this.physic.shape, [
     //   /* static friction */ 100, // 0.5
     //   /* dynamic friction */ 100, // 0.5,
     //   /* restitution */ 0,
     //   // @ts-ignore
-    //   /* friction combine mode */ world.havok.MaterialCombine.MINIMUM,
+    //   /* friction combine mode */ world.physic.havok.MaterialCombine.MINIMUM,
     //   // @ts-ignore
-    //   /* restitution combine mode */ world.havok.MaterialCombine.MAXIMUM,
+    //   /* restitution combine mode */ world.physic.havok.MaterialCombine.MAXIMUM,
     // ])
 
     // Mass
-    // this.world.havok.HP_Body_SetMassProperties(this.physic.body, [
+    // this.world.physic.havok.HP_Body_SetMassProperties(this.physic.body, [
     //   /* center of mass */[0, 0, 0],
     //   /* Mass */ //0.035,
     //   /* Inertia for mass of 1*/[0.01, 0.01, 0.01],
@@ -77,15 +77,15 @@ export class Player {
 
 
 
-    // world.havok.HP_Body_SetLinearDamping(this.physic.body, 10)
+    // world.physic.havok.HP_Body_SetLinearDamping(this.physic.body, 10)
 
 
-    // world.havok.HP_Body_SetAngularDamping(this.physic.body, Number.POSITIVE_INFINITY)
-    // const constraintID = world.havok.HP_Constraint_Create()[1]
-    // world.havok.HP_Constraint_SetChildBody(constraintID, this.physic.body);
-    // world.havok.HP_Constraint_SetAxisMode(constraintID, world.havok.ConstraintAxis.ANGULAR_X, world.havok.ConstraintAxisLimitMode.LOCKED);
-    // world.havok.HP_Constraint_SetAxisMode(constraintID, world.havok.ConstraintAxis.ANGULAR_Y, world.havok.ConstraintAxisLimitMode.LOCKED);
-    // world.havok.HP_Constraint_SetAxisMode(constraintID, world.havok.ConstraintAxis.ANGULAR_Z, world.havok.ConstraintAxisLimitMode.LOCKED);
+    // world.physic.havok.HP_Body_SetAngularDamping(this.physic.body, Number.POSITIVE_INFINITY)
+    // const constraintID = world.physic.havok.HP_Constraint_Create()[1]
+    // world.physic.havok.HP_Constraint_SetChildBody(constraintID, this.physic.body);
+    // world.physic.havok.HP_Constraint_SetAxisMode(constraintID, world.physic.havok.ConstraintAxis.ANGULAR_X, world.physic.havok.ConstraintAxisLimitMode.LOCKED);
+    // world.physic.havok.HP_Constraint_SetAxisMode(constraintID, world.physic.havok.ConstraintAxis.ANGULAR_Y, world.physic.havok.ConstraintAxisLimitMode.LOCKED);
+    // world.physic.havok.HP_Constraint_SetAxisMode(constraintID, world.physic.havok.ConstraintAxis.ANGULAR_Z, world.physic.havok.ConstraintAxisLimitMode.LOCKED);
 
     this.update = this.update.bind(this)
     this.update()
@@ -119,7 +119,7 @@ export class Player {
     this.physic.setVelocity(velocity)
 
     // Disable rotation
-    this.world.havok.HP_Body_SetAngularVelocity(this.physic.body, [0, 0, 0])
+    this.world.physic.havok.HP_Body_SetAngularVelocity(this.physic.body, [0, 0, 0])
     this.physic.setTransform(
       this.render.mesh.position.toArray(),
       [0, 0, 0, 1]
@@ -129,7 +129,7 @@ export class Player {
     if (this.controller.isAction1 && !this.isJump) {
       this.isJump = true
       this.isFalling = false
-      this.world.havok.HP_Body_ApplyImpulse(this.physic.body, this.render.mesh.position.toArray(), [0, JUMP_POWER, 0])
+      this.world.physic.havok.HP_Body_ApplyImpulse(this.physic.body, this.render.mesh.position.toArray(), [0, JUMP_POWER, 0])
     } else if (this.isJump && !this.isFalling && velocity[1] < 0) {
       this.isFalling = true
     } else if (this.isJump && this.isFalling && velocity[1] > 0) {

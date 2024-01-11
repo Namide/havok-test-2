@@ -95,35 +95,35 @@ class GroundPart {
 
 
     // Physic
-    this.body = this.world.havok.HP_Body_Create()[1];
+    this.body = this.world.physic.havok.HP_Body_Create()[1];
 
     const vertices = geometry.getAttribute('position').array
-    const havokPositions = getVertices(this.world.havok, vertices as Float32Array);
+    const havokPositions = getVertices(this.world.physic.havok, vertices as Float32Array);
     const numVec3s = havokPositions.numObjects / 3;
-    const havokTriangles = getTriangles(this.world.havok, [...(geometry.getIndex()?.array || [])])
+    const havokTriangles = getTriangles(this.world.physic.havok, [...(geometry.getIndex()?.array || [])])
     const numTriangles = havokTriangles.numObjects / 3;
-    const shape = this.world.havok.HP_Shape_CreateMesh(havokPositions.offset, numVec3s, havokTriangles.offset, numTriangles)[1]
+    const shape = this.world.physic.havok.HP_Shape_CreateMesh(havokPositions.offset, numVec3s, havokTriangles.offset, numTriangles)[1]
 
     // @ts-ignore
-    this.world.havok._free(havokTriangles)
+    this.world.physic.havok._free(havokTriangles)
 
     // @ts-ignore
-    this.world.havok._free(havokPositions)
+    this.world.physic.havok._free(havokPositions)
 
-    this.world.havok.HP_Body_SetShape(this.body, shape);
-    this.world.havok.HP_Body_SetQTransform(this.body, [position, rotation]);
-    this.world.havok.HP_Body_SetMotionType(this.body, this.world.havok.MotionType.STATIC);
-    // this.world.havok.HP_Body_SetMassProperties(this.body, [
+    this.world.physic.havok.HP_Body_SetShape(this.body, shape);
+    this.world.physic.havok.HP_Body_SetQTransform(this.body, [position, rotation]);
+    this.world.physic.havok.HP_Body_SetMotionType(this.body, this.world.physic.havok.MotionType.STATIC);
+    // this.world.physic.havok.HP_Body_SetMassProperties(this.body, [
     //   /* center of mass */[0, 0, 0],
     //   /* Mass */ mass,
     //   /* Inertia for mass of 1*/[0.01, 0.01, 0.01],
     //   /* Inertia Orientation */[0, 0, 0, 1],
     // ]);
-    this.world.havok.HP_World_AddBody(this.world.physic, this.body, false);
+    this.world.physic.havok.HP_World_AddBody(this.world.physic.world, this.body, false);
 
 
     // Update
-    const transform = this.world.havok.HP_Body_GetQTransform(this.body)[1];
+    const transform = this.world.physic.havok.HP_Body_GetQTransform(this.body)[1];
     this.mesh.position.set(...transform[0]);
     this.mesh.quaternion.set(...transform[1]);
   }
@@ -131,7 +131,7 @@ class GroundPart {
   dispose() {
     this.mesh.geometry.dispose()
     this.mesh.parent?.remove(this.mesh)
-    this.world.havok.HP_Body_Release(this.body);
+    this.world.physic.havok.HP_Body_Release(this.body);
   }
 }
 
