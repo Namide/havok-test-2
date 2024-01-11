@@ -3,11 +3,12 @@ import { JoystickManagerEventTypes } from 'nipplejs';
 
 export class Controller {
 
-  isTop = false
-  isLeft = false
-  isRight = false
-  isBottom = false
-  isAction1 = false
+  private _isTop = false
+  private _isLeft = false
+  private _isRight = false
+  private _isBottom = false
+  private _isAction1 = false
+
   joystick?: nipplejs.JoystickManager
   vector?: { x: number, y: number }
 
@@ -16,7 +17,9 @@ export class Controller {
   screenSize = { w: innerWidth, h: innerHeight }
   mousePosition: { x: number, y: number } | false = false
 
-  constructor({ joystick = false, click = false }) {
+  gamepadEnabled = false
+
+  constructor({ joystick = false, click = false, gamepad = true }) {
 
     this.onKeyDown = this.onKeyDown.bind(this)
     this.onKeyUp = this.onKeyUp.bind(this)
@@ -32,6 +35,8 @@ export class Controller {
     window.addEventListener('keydown', this.onKeyDown);
     window.addEventListener('keyup', this.onKeyUp);
     window.addEventListener("resize", this.onResize);
+
+    this.gamepadEnabled = gamepad
 
     if (joystick) {
 
@@ -59,6 +64,70 @@ export class Controller {
       this.canvas.addEventListener("touchstart", this.onTouchStart);
       this.canvas.addEventListener("touchmove", this.onTouchMove);
       this.canvas.addEventListener("touchend", this.onTouchEnd);
+    }
+  }
+
+  get isTop() {
+    return this._isTop || this.testGamepadAxe(1, false) || this.testGamepadAxe(7, false)
+  }
+
+  get isLeft() {
+    return this._isLeft || this.testGamepadAxe(6, false) || this.testGamepadAxe(0, false)
+  }
+
+  get isRight() {
+    return this._isRight || this.testGamepadAxe(6, true) || this.testGamepadAxe(0, true)
+  }
+
+  get isBottom() {
+    return this._isBottom || this.testGamepadAxe(1, true) || this.testGamepadAxe(7, true)
+  }
+
+  get isAction1() {
+    return this._isAction1 || this.testGamepadPressed(0)
+  }
+
+  private _getGamepad() {
+    return this.gamepadEnabled
+      && navigator.getGamepads()[0]
+      || false
+  }
+
+  testGamepadAxe(index: number, isPositive = true) {
+    const gamepad = this._getGamepad()
+    if (gamepad && isPositive) {
+      return gamepad.axes[index] > 0.4
+    }
+    if (gamepad && !isPositive) {
+      return gamepad.axes[index] < -0.4
+    }
+
+    return false
+  }
+
+  testGamepadPressed(index: number) {
+    const gamepad = this._getGamepad()
+    if (gamepad) {
+      return gamepad.buttons[index].pressed
+    }
+    return false
+  }
+
+  dispose() {
+    window.removeEventListener('keydown', this.onKeyDown);
+    window.removeEventListener('keyup', this.onKeyUp);
+    this.canvas.removeEventListener("mousedown", this.onMouseDown);
+    this.canvas.removeEventListener('mousemove', this.onMouseMove)
+    this.canvas.removeEventListener('mouseup', this.onMouseUp)
+    window.removeEventListener('mouseleave', this.onMouseUp)
+    this.canvas.removeEventListener('touchmove', this.onTouchMove)
+    this.canvas.removeEventListener('touchend', this.onTouchEnd)
+    window.removeEventListener("resize", this.onResize);
+    (document.body.querySelector('.joystick') as HTMLDivElement).removeEventListener("click", this.onClick);
+
+    if (this.joystick) {
+      this.joystick.destroy()
+      this.joystick = undefined
     }
   }
 
@@ -120,19 +189,19 @@ export class Controller {
     this.mousePosition = false
     switch (event.key) {
       case "ArrowLeft":
-        this.isLeft = true
+        this._isLeft = true
         break;
       case "ArrowRight":
-        this.isRight = true
+        this._isRight = true
         break;
       case "ArrowUp":
-        this.isTop = true
+        this._isTop = true
         break;
       case "ArrowDown":
-        this.isBottom = true
+        this._isBottom = true
         break;
       case " ":
-        this.isAction1 = true
+        this._isAction1 = true
         break
     }
     if (this.joystick) {
@@ -146,38 +215,20 @@ export class Controller {
     this.mousePosition = false
     switch (event.key) {
       case "ArrowLeft":
-        this.isLeft = false
+        this._isLeft = false
         break;
       case "ArrowRight":
-        this.isRight = false
+        this._isRight = false
         break;
       case "ArrowUp":
-        this.isTop = false
+        this._isTop = false
         break;
       case "ArrowDown":
-        this.isBottom = false
+        this._isBottom = false
         break;
       case " ":
-        this.isAction1 = false
+        this._isAction1 = false
         break
-    }
-  }
-
-  dispose() {
-    window.removeEventListener('keydown', this.onKeyDown);
-    window.removeEventListener('keyup', this.onKeyUp);
-    this.canvas.removeEventListener("mousedown", this.onMouseDown);
-    this.canvas.removeEventListener('mousemove', this.onMouseMove)
-    this.canvas.removeEventListener('mouseup', this.onMouseUp)
-    window.removeEventListener('mouseleave', this.onMouseUp)
-    this.canvas.removeEventListener('touchmove', this.onTouchMove)
-    this.canvas.removeEventListener('touchend', this.onTouchEnd)
-    window.removeEventListener("resize", this.onResize);
-    (document.body.querySelector('.joystick') as HTMLDivElement).removeEventListener("click", this.onClick);
-
-    if (this.joystick) {
-      this.joystick.destroy()
-      this.joystick = undefined
     }
   }
 }

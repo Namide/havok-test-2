@@ -42,7 +42,6 @@ export class Ground {
   }
 
   update(x: number, y: number) {
-
     const middle = [
       Math.round(x / GROUND_SIZE[0]),
       Math.round(y / GROUND_SIZE[2])
@@ -74,6 +73,7 @@ export class Ground {
     const groundPart = new Part(this.world, x, y, this.material)
     this.group.add(groundPart.mesh)
     this.list.push(groundPart)
+    return groundPart
   }
 
   removeGround(x: number, y: number) {

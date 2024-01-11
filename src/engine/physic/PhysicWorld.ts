@@ -85,7 +85,6 @@ export class PhysicWorld {
     // const event = new CollisionEvent();
     // const worldAddr = Number(this.world);
     if (eventAddress) {
-      console.log('->', eventAddress)
 
       const event = createCollisionEvent(this.havok.HEAPU8.buffer, eventAddress)
       this.collisions.push(event)

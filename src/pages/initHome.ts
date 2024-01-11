@@ -45,7 +45,6 @@ export async function initHome() {
 
   // Sphere
   for (let i = 0; i < 10; i++) {
-
     const sphere = new Element({
       world,
       texture,
@@ -55,38 +54,7 @@ export async function initHome() {
     });
     world.render.scene.add(sphere.render.mesh);
     updates.push(sphere.update);
-
-    // mouseEmitter.over.on(mesh, () => {
-    //   renderworld.render.renderer.domElement.style.cursor = "grab";
-    // });
-
-    // mouseEmitter.out.on(mesh, () => {
-    //   renderworld.render.renderer.domElement.style.cursor = "auto";
-    // });
-
-    // mouseEmitter.click.on(mesh, (target) => {
-    //   console.log("click:", target);
-    // });
   }
-
-  // Cards
-  // for (let i = 0; i < 5; i++) {
-  //   const { mesh: card, update } = await createCard({
-  //     physic,
-  //     position: [rand(1, -1), rand(4, 2), rand(1, -1)],
-  //     rotation: quaternion
-  //       .setFromEuler(
-  //         euler.set(rand(2 * Math.PI), rand(2 * Math.PI), rand(2 * Math.PI)),
-  //         true,
-  //       )
-  //       .toArray() as Quaternion,
-  //     size: [1, 3 / 2, 0.01],
-  //     mouseEmitter,
-  //     renderWorld,
-  //   });
-  //   renderworld.render.scene.add(card);
-  //   updates.push(update);
-  // }
 
   // Cube
   for (let i = 0; i < 100; i++) {
@@ -101,7 +69,6 @@ export async function initHome() {
       ],
       size: [rand(1.2, 0.2), rand(1.2, 0.2), rand(1.2, 0.2)],
       rotation: getRandomRotation(),
-      // mouseEmitter,
     });
     world.render.scene.add(cube.render.mesh);
     updates.push(cube.update);
@@ -110,7 +77,6 @@ export async function initHome() {
   world.render.renderer.setAnimationLoop(tick);
 
   function tick(/* time: number */) {
-
     const delta = clock.getDelta();
 
     player.updateControls();
