@@ -5,10 +5,13 @@ import { PhysicElement } from "../physic/PhysicElement";
 import { RenderElement } from "../render/RenderElement";
 import { PhysicMotionType, ShapeType } from "../../types";
 import { Controller } from "../../events/Controller";
+import { PlayerRender } from "../render/PlayerRender";
 
 export class Player {
   world: World
-  render: RenderElement<ShapeType.Capsule>
+  group = new THREE.Group()
+  capsule: RenderElement<ShapeType.Capsule>
+  render: PlayerRender
   physic: PhysicElement<ShapeType.Capsule>
   controller: Controller
 
@@ -37,7 +40,15 @@ export class Player {
 
     this.controller = new Controller({})
 
-    this.render = new RenderElement({
+    this.render = new PlayerRender({
+      world,
+      texture,
+      position,
+      rotation
+    })
+    this.group.add(this.render.mesh)
+
+    this.capsule = new RenderElement({
       world,
       texture,
       position,
@@ -45,6 +56,10 @@ export class Player {
       size,
       rotation
     })
+    this.capsule.mesh.position.set(0, 0, 0)
+    this.capsule.mesh.quaternion.set(0, 0, 0, 1)
+
+    this.group.add(this.capsule.mesh)
 
     this.physic = new PhysicElement({
       world,
@@ -61,54 +76,8 @@ export class Player {
     // console.log(this.world.physic.havok.EventType.COLLISION_STARTED)
     this.world.physic.havok.HP_Body_SetEventMask(this.physic.body, collideEvents);
 
-
-
-
-
-    // if (body._pluginDataInstances && body._pluginDataInstances.length) {
-    //   body._pluginDataInstances.forEach((bodyId) => {
-    //     this._hknp.HP_Body_SetEventMask(bodyId.hpBodyId, enabled ? collideEvents : 0);
-    //   });
-    // } else if (body._pluginData) {
-    //   this._hknp.HP_Body_SetEventMask(body._pluginData.hpBodyId, enabled ? collideEvents : 0);
-    // }
-
-
-    // Material
-    // world.physic.havok.HP_Shape_SetMaterial(this.physic.shape, [
-    //   /* static friction */ 100, // 0.5
-    //   /* dynamic friction */ 100, // 0.5,
-    //   /* restitution */ 0,
-    //   // @ts-ignore
-    //   /* friction combine mode */ world.physic.havok.MaterialCombine.MINIMUM,
-    //   // @ts-ignore
-    //   /* restitution combine mode */ world.physic.havok.MaterialCombine.MAXIMUM,
-    // ])
-
-    // Mass
-    // this.world.physic.havok.HP_Body_SetMassProperties(this.physic.body, [
-    //   /* center of mass */[0, 0, 0],
-    //   /* Mass */ //0.035,
-    //   /* Inertia for mass of 1*/[0.01, 0.01, 0.01],
-    //   /* Inertia Orientation */[0, 0, 0, 1],
-    // ]);
-
-
-
-
-
-    // world.physic.havok.HP_Body_SetLinearDamping(this.physic.body, 10)
-
-
-    // world.physic.havok.HP_Body_SetAngularDamping(this.physic.body, Number.POSITIVE_INFINITY)
-    // const constraintID = world.physic.havok.HP_Constraint_Create()[1]
-    // world.physic.havok.HP_Constraint_SetChildBody(constraintID, this.physic.body);
-    // world.physic.havok.HP_Constraint_SetAxisMode(constraintID, world.physic.havok.ConstraintAxis.ANGULAR_X, world.physic.havok.ConstraintAxisLimitMode.LOCKED);
-    // world.physic.havok.HP_Constraint_SetAxisMode(constraintID, world.physic.havok.ConstraintAxis.ANGULAR_Y, world.physic.havok.ConstraintAxisLimitMode.LOCKED);
-    // world.physic.havok.HP_Constraint_SetAxisMode(constraintID, world.physic.havok.ConstraintAxis.ANGULAR_Z, world.physic.havok.ConstraintAxisLimitMode.LOCKED);
-
-    this.update = this.update.bind(this)
-    this.update()
+    this.tick = this.tick.bind(this)
+    this.tick(0)
   }
 
   dispose() {
@@ -124,7 +93,9 @@ export class Player {
 
     const velocity = this.physic.getVelocity()
 
-    const onGround = this.world.physic.collisions.find(event => event.a.body[0] === this.physic.body[0] && event.a.normal[1] < -0.5)
+    const onGround = this.world.physic.collisions
+      .find(event => event.a.body[0] === this.physic.body[0] && event.a.normal[1] < -0.5)
+
     if (onGround) {
       this.isJump = false
     } else {
@@ -168,14 +139,19 @@ export class Player {
     this.world.physic.havok.HP_Body_SetAngularVelocity(this.physic.body, [0, 0, 0])
   }
 
-  update() {
+  tick(delta: number) {
     const [realPosition] = this.world.physic.havok.HP_Body_GetQTransform(this.physic.body)[1]
     this.physic.setTransform(
       realPosition,
       [0, 0, 0, 1]
     )
     const { position, quaternion } = this.physic.getTransform();
-    this.render.mesh.position.set(...position);
-    this.render.mesh.quaternion.set(...quaternion);
+    // this.capsule.mesh.position.set(...position);
+    // this.capsule.mesh.quaternion.set(...quaternion);
+
+    this.group.position.set(...position);
+    this.group.quaternion.set(...quaternion);
+
+    this.render.tick(delta)
   }
 }

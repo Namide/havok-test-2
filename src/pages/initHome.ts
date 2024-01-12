@@ -40,8 +40,7 @@ export async function initHome() {
     texture,
     position: [5, 6, 0],
   });
-  world.render.scene.add(player.render.mesh);
-  updates.push(player.update);
+  world.render.scene.add(player.group);
 
   // Sphere
   for (let i = 0; i < 10; i++) {
@@ -84,8 +83,9 @@ export async function initHome() {
     for (const update of updates) {
       update();
     }
-    world.display(player.render.mesh, ground.group)
-    ground.update(player.render.mesh.position.x, player.render.mesh.position.z)
+    player.tick(delta)
+    world.display(player.group, ground.group)
+    ground.update(player.group.position.x, player.group.position.z)
   }
 
   return {

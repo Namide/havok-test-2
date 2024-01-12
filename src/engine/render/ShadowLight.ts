@@ -4,11 +4,13 @@ import pcssFragment from "../render/pcss.fragment.glsl";
 import pcssGetShadowFragment from "../render/pcssGetShadow.fragment.glsl";
 import { vector3 } from "../../constants";
 
-const LIGHT_POSITION = new THREE.Vector3(4, 4, 8)
+const LIGHT_POSITION = new THREE.Vector3(8, 8, 8)
 const TARGET_POSITION = new THREE.Vector3(0, 0, 0)
-const SHADOW_SIDE = 10
-const SHADOW_DEPTH = 12
-const SHADOW_RESOLUTION = 1024
+
+const SHADOW_WIDTH = 10
+const SHADOW_HEIGHT = 10
+const SHADOW_DEPTH = 16
+const SHADOW_BLUR_RADIUS = 2
 
 // Soft shadows
 // https://github.com/mrdoob/three.js/blob/master/examples/webgl_shadowmap_pcss.html
@@ -20,10 +22,14 @@ export class ShadowLight {
 
   init({
     renderer,
-    scene
+    scene,
+    width,
+    height,
   }: {
     renderer: THREE.WebGLRenderer,
-    scene: THREE.Scene
+    scene: THREE.Scene,
+    width: number,
+    height: number
   }) {
     // Shadows
     if (SOFT_SHADOW && SHADOW) {
@@ -56,16 +62,16 @@ export class ShadowLight {
     if (SHADOW) {
       this.light.castShadow = true;
       if (!SOFT_SHADOW) {
-        this.light.shadow.radius = 4
+        this.light.shadow.radius = SHADOW_BLUR_RADIUS
       }
-      this.light.shadow.mapSize.width = SHADOW_RESOLUTION;
-      this.light.shadow.mapSize.height = SHADOW_RESOLUTION;
+      this.light.shadow.mapSize.width = Math.max(width, height) / 2;
+      this.light.shadow.mapSize.height = Math.max(width, height) / 2;
       this.light.shadow.camera.far = distance + SHADOW_DEPTH;
       this.light.shadow.camera.near = Math.max(1, distance - SHADOW_DEPTH);
-      this.light.shadow.camera.top = SHADOW_SIDE
-      this.light.shadow.camera.bottom = -SHADOW_SIDE;
-      this.light.shadow.camera.left = SHADOW_SIDE;
-      this.light.shadow.camera.right = -SHADOW_SIDE;
+      this.light.shadow.camera.top = SHADOW_HEIGHT
+      this.light.shadow.camera.bottom = -SHADOW_HEIGHT;
+      this.light.shadow.camera.left = SHADOW_WIDTH;
+      this.light.shadow.camera.right = -SHADOW_WIDTH;
       if (DEBUG) {
         scene.add(new THREE.CameraHelper(this.light.shadow.camera));
       }

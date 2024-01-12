@@ -44,6 +44,8 @@ export class RenderWorld {
     this.shadowLight.init({
       scene: this.scene,
       renderer: this.renderer,
+      width,
+      height
     })
 
     // const mouseEmitter = await createMouseEmitter({
