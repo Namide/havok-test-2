@@ -16,6 +16,7 @@ export class RenderWorld {
   scene: THREE.Scene
   camera: THREE.PerspectiveCamera
 
+  private _targetCamera: THREE.Vector3
   private shadowLight: ShadowLight = new ShadowLight()
   private controls?: OrbitControls
 
@@ -30,7 +31,8 @@ export class RenderWorld {
       1000,
     );
     this.camera.position.set(...CAMERA_POSITION)
-    this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+    this._targetCamera = new THREE.Vector3(0, 0, 0)
+    this.camera.lookAt(this._targetCamera);
 
     // Renderer
     this.renderer = new THREE.WebGLRenderer({
@@ -95,8 +97,9 @@ export class RenderWorld {
       // Camera follow
       if (CAMERA_FOLLOW && !ORBIT_CONTROL) {
         if (point) {
-          this.camera.position.copy(vector3.set(...CAMERA_POSITION).add(point))
-          this.camera.lookAt(point);
+          this.camera.position.lerp(vector3.set(...CAMERA_POSITION).add(point), 0.1)
+          this._targetCamera.lerp(point, 0.1)
+          this.camera.lookAt(this._targetCamera);
         }
       }
     }

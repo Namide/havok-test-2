@@ -31,7 +31,7 @@ export async function initHome() {
   const updates: (() => void)[] = []
 
   // Ground
-  const ground = new Ground(world, texture)
+  const ground = new Ground(world)
   world.render.scene.add(ground.group);
 
   // Player

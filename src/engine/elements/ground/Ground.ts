@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { World } from "../World";
 import { GROUND_SIZE, SHADOW } from "../../../config";
-import { getGroundNormalTexture } from "../../render/textures";
+import { getGroundAmbiantOcclusionTexture, getGroundDiffuseTexture, getGroundNormalTexture } from "../../render/textures";
 import { Part } from './Part'
 
 
@@ -14,7 +14,7 @@ export class Ground {
 
   material: THREE.Material
 
-  constructor(world: World, texture: THREE.Texture) {
+  constructor(world: World) {
 
     this.world = world
 
@@ -24,11 +24,15 @@ export class Ground {
     this.material = SHADOW ?
       new THREE.MeshLambertMaterial({
         // map: texture,
-        color: 0xCCCCCC,
-        bumpMap: getGroundNormalTexture()
+        // color: 0xCCCCCC,
+        map: getGroundDiffuseTexture(),
+        bumpMap: getGroundNormalTexture(),
+        aoMap: getGroundAmbiantOcclusionTexture(),
+
+        bumpScale: 5,
       }) :
       new THREE.MeshBasicMaterial({
-        map: texture
+        map: getGroundDiffuseTexture()
       });
 
 
