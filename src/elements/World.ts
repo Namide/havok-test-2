@@ -1,7 +1,7 @@
 import * as THREE from "three";
-import { Havok } from "../physic/getHavok";
-import { PhysicWorld } from "../physic/PhysicWorld";
-import { RenderWorld } from "../render/RenderWorld";
+import { Havok } from "../engine/physic/getHavok";
+import { PhysicWorld } from "../engine/physic/PhysicWorld";
+import { RenderWorld } from "../engine/render/RenderWorld";
 
 export class World {
 

@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { World } from "../World";
-import { GROUND_SIZE, SHADOW } from "../../../config";
-import { getGroundAmbiantOcclusionTexture, getGroundDiffuseTexture, getGroundNormalTexture } from "../../render/textures";
+import { GROUND_SIZE, SHADOW } from "../../config";
+import { getGroundAmbiantOcclusionTexture, getGroundDiffuseTexture, getGroundNormalTexture } from "../../engine/render/textures";
 import { Part } from './Part'
 
 

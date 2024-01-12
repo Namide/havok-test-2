@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { SHADOW } from "../../config";
-import { World } from "../elements/World";
+import { World } from "../../elements/World";
 import { Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
 import { CapsuleSize, ShapeType, SizeByShape } from "../../types";
 import { vector3 } from "../../constants";

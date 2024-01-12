@@ -1,9 +1,9 @@
 import * as THREE from "three";
 import { World } from "./World";
-import { Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
-import { PhysicElement } from "../physic/PhysicElement";
-import { RenderElement } from "../render/RenderElement";
-import { PhysicMotionType, ShapeType, SizeByShape } from "../../types";
+import { Quaternion, Vector3 } from "../engine/physic/havok/HavokPhysics";
+import { PhysicElement } from "../engine/physic/PhysicElement";
+import { RenderElement } from "../engine/render/RenderElement";
+import { PhysicMotionType, ShapeType, SizeByShape } from "../types";
 
 export class Element<
   CurrentPhysicShapeType extends ShapeType,

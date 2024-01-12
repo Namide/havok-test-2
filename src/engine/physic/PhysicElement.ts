@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { CapsuleSize, PhysicMotionType, ShapeType, SizeByShape } from "../../types";
-import { World } from "../elements/World";
+import { World } from "../../elements/World";
 import { HP_BodyId, HP_ShapeId, Quaternion, Vector3 } from "./havok/HavokPhysics";
 import { vector3 } from "../../constants";
 

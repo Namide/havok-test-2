@@ -1,50 +1,11 @@
 import { Havok } from "./getHavok";
 import { HP_BodyId, HP_WorldId, Vector3 } from "./havok/HavokPhysics";
 
-// class ContactPoint {
-//   public bodyId: bigint = BigInt(0); //0,2
-//   //public colliderId: number = 0; //2,4
-//   //public shapePath: ShapePath = new ShapePath(); //4,8
-//   public position: Vector3 = new Vector3(); //8,11
-//   public normal: Vector3 = new Vector3(); //11,14
-//   //public triIdx: number = 0; //14,15
-// }
-
-// class CollisionEvent {
-//   public contactOnA: ContactPoint = new ContactPoint(); //1
-//   public contactOnB: ContactPoint = new ContactPoint();
-//   public impulseApplied: number = 0;
-//   public type: number = 0;
-
-//   static readToRef(buffer: any, offset: number, eventOut: CollisionEvent) {
-//     const intBuf = new Int32Array(buffer, offset);
-//     const floatBuf = new Float32Array(buffer, offset);
-//     const offA = 2;
-//     eventOut.contactOnA.bodyId = BigInt(intBuf[offA]); //<todo Need to get the high+low words!
-//     eventOut.contactOnA.position.set(floatBuf[offA + 8], floatBuf[offA + 9], floatBuf[offA + 10]);
-//     eventOut.contactOnA.normal.set(floatBuf[offA + 11], floatBuf[offA + 12], floatBuf[offA + 13]);
-//     const offB = 18;
-//     eventOut.contactOnB.bodyId = BigInt(intBuf[offB]);
-//     eventOut.contactOnB.position.set(floatBuf[offB + 8], floatBuf[offB + 9], floatBuf[offB + 10]);
-//     eventOut.contactOnB.normal.set(floatBuf[offB + 11], floatBuf[offB + 12], floatBuf[offB + 13]);
-//     eventOut.impulseApplied = floatBuf[offB + 13 + 3];
-//     eventOut.type = intBuf[0];
-//   }
-// }
-
 function createCollisionEvent(buffer: ArrayBufferLike, offset: number) {
   const intBuf = new Int32Array(buffer, offset);
   const floatBuf = new Float32Array(buffer, offset);
   const offA = 2;
-  // eventOut.contactOnA.bodyId = BigInt(intBuf[offA]);
-  // eventOut.contactOnA.position.set(floatBuf[offA + 8], floatBuf[offA + 9], floatBuf[offA + 10]);
-  // eventOut.contactOnA.normal.set(floatBuf[offA + 11], floatBuf[offA + 12], floatBuf[offA + 13]);
   const offB = 18;
-  // eventOut.contactOnB.bodyId = BigInt(intBuf[offB]);
-  // eventOut.contactOnB.position.set(floatBuf[offB + 8], floatBuf[offB + 9], floatBuf[offB + 10]);
-  // eventOut.contactOnB.normal.set(floatBuf[offB + 11], floatBuf[offB + 12], floatBuf[offB + 13]);
-  // eventOut.impulseApplied = floatBuf[offB + 13 + 3];
-  // eventOut.type = intBuf[0];
 
   return {
     a: {
@@ -72,11 +33,7 @@ export class PhysicWorld {
     this.havok = havok
     this.world = this.havok.HP_World_Create()[1];
     this.havok.HP_World_SetGravity(this.world, [0, -9.81, 0]);
-
-
   }
-
-
 
   collisionTest() {
     this.collisions = []

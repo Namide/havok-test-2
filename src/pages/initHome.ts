@@ -1,13 +1,14 @@
 import * as THREE from "three";
 import { euler, quaternion } from "../constants";
-import { World } from "../engine/elements/World";
+import { World } from "../elements/World";
 import { getCheckerTexture } from "../engine/render/textures";
-import { Ground } from "../engine/elements/ground/Ground";
+import { Ground } from "../elements/ground/Ground";
 import { getHavok } from "../engine/physic/getHavok";
 import { Quaternion } from "../engine/physic/havok/HavokPhysics";
-import { Element } from "../engine/elements/Element";
-import { Player } from "../engine/elements/Player";
+import { Element } from "../elements/Element";
+import { Player } from "../elements/Player";
 import { ShapeType } from "../types";
+import { Rock } from "../elements/Rock";
 
 const GROUND_SIZE = 20;
 
@@ -41,6 +42,15 @@ export async function initHome() {
     position: [5, 6, 0],
   });
   world.render.scene.add(player.group);
+
+  // Rock
+  const rock = new Rock({
+    world,
+    position: [0, -5, 0],
+    rotation: [0, 0, 0, 1],
+    size: [1, 1, 1]
+  });
+  world.render.scene.add(rock.mesh);
 
   // Sphere
   for (let i = 0; i < 10; i++) {

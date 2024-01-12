@@ -1,11 +1,11 @@
 import * as THREE from "three";
 import { World } from "./World";
-import { Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
-import { PhysicElement } from "../physic/PhysicElement";
+import { Quaternion, Vector3 } from "../engine/physic/havok/HavokPhysics";
+import { PhysicElement } from "../engine/physic/PhysicElement";
 // import { RenderElement } from "../render/RenderElement";
-import { PhysicMotionType, ShapeType } from "../../types";
-import { Controller } from "../../events/Controller";
-import { PlayerRender } from "../render/PlayerRender";
+import { PhysicMotionType, ShapeType } from "../types";
+import { Controller } from "../events/Controller";
+import { PlayerRender } from "../engine/render/PlayerRender";
 
 export class Player {
   world: World
