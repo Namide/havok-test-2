@@ -4,10 +4,20 @@ import { World } from "../elements/World";
 import { Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
+type StanceNames = 'Jump' | 'Run' | 'IDLE'
+
 export class PlayerRender {
   world: World
   mesh: THREE.Group = new THREE.Group()
   mixer?: THREE.AnimationMixer
+  rotationY = 0
+
+  private _animation: StanceNames = 'IDLE'
+  private _animations?: {
+    IDLE: THREE.AnimationAction,
+    Run: THREE.AnimationAction,
+    Jump: THREE.AnimationAction,
+  }
 
   constructor(
     { world, texture, position, rotation }:
@@ -26,11 +36,36 @@ export class PlayerRender {
       const model = gltf.scene
 
       gltf.scene.traverse((object) => {
-        console.log(object.name, object)
-        if ((object as THREE.Mesh).isMesh) {
-          // console.log(object)
-          // model = (object as THREE.Mesh)
-          object.castShadow = true;
+        // console.log(object.name, object)
+        const mesh = object as THREE.Mesh
+
+        if (mesh.material) {
+
+          switch ((mesh.material as { name: string }).name) {
+            case 'Head':
+              mesh.material = new THREE.MeshPhongMaterial({
+                color: 0xf9f06b,
+                specular: 0xff6b00,
+                emissive: 0x600000,
+                emissiveIntensity: 10,
+                shininess: 10,
+              })
+              break
+            case 'Body':
+              mesh.material = new THREE.MeshPhongMaterial({
+                color: 0x3584e4,
+                specular: 0x99c1f1,
+                emissive: 0x000000,
+                emissiveIntensity: 10,
+                shininess: 0,
+              })
+              break
+          }
+
+          mesh.castShadow = true;
+
+
+          console.log(mesh.name, mesh)
         }
       });
 
@@ -44,20 +79,28 @@ export class PlayerRender {
       // render();
 
 
-      const animations = gltf.animations;
+      // this._animations = gltf.animations;
 
       this.mixer = new THREE.AnimationMixer(model);
+      // console.log(animations)
+      this._animations = {
+        IDLE: this.mixer.clipAction(gltf.animations.find(({ name }) => name === 'IDLE') as THREE.AnimationClip),
+        Run: this.mixer.clipAction(gltf.animations.find(({ name }) => name === 'Run') as THREE.AnimationClip),
+        Jump: this.mixer.clipAction(gltf.animations.find(({ name }) => name === 'Jump') as THREE.AnimationClip),
+      }
 
-      const idleAction = this.mixer.clipAction(animations[0]);
-      const walkAction = this.mixer.clipAction(animations[3]);
-      const runAction = this.mixer.clipAction(animations[1]);
 
-      const actions = [idleAction, walkAction, runAction];
+      // const idleAction = this.mixer.clipAction(animations[0]);
+      // const walkAction = this.mixer.clipAction(animations[3]);
+      // const runAction = this.mixer.clipAction(animations[1]);
+
+      // const actions = [idleAction, walkAction, runAction];
 
       // biome-ignore lint/complexity/noForEach: <explanation>
-      actions.forEach((action) => {
+      Object.values(this._animations).forEach((action) => {
         action.play();
       });
+      this.animation = 'IDLE'
     });
 
 
@@ -73,8 +116,22 @@ export class PlayerRender {
     }
   }
 
+  set animation(value: StanceNames) {
+    if (this._animation !== value) {
+      this._animation = value
+
+      if (this._animations) {
+        Object.entries(this._animations).forEach(([name, action]) => {
+          action.weight = name === value ? 1 : 0
+        });
+      }
+    }
+  }
+
   tick(delta: number) {
-    if (this.mixer)
+    this.mesh.rotation.y = this.rotationY
+    if (this.mixer) {
       this.mixer.update(delta);
+    }
   }
 }

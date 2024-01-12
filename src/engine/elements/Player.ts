@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { World } from "./World";
 import { Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
 import { PhysicElement } from "../physic/PhysicElement";
-import { RenderElement } from "../render/RenderElement";
+// import { RenderElement } from "../render/RenderElement";
 import { PhysicMotionType, ShapeType } from "../../types";
 import { Controller } from "../../events/Controller";
 import { PlayerRender } from "../render/PlayerRender";
@@ -10,12 +10,13 @@ import { PlayerRender } from "../render/PlayerRender";
 export class Player {
   world: World
   group = new THREE.Group()
-  capsule: RenderElement<ShapeType.Capsule>
+  // capsule: RenderElement<ShapeType.Capsule>
   render: PlayerRender
   physic: PhysicElement<ShapeType.Capsule>
   controller: Controller
 
   isJump = false
+  isJumpForce = false
   isFalling = false
 
   constructor({
@@ -48,18 +49,17 @@ export class Player {
     })
     this.group.add(this.render.mesh)
 
-    this.capsule = new RenderElement({
-      world,
-      texture,
-      position,
-      shape: ShapeType.Capsule,
-      size,
-      rotation
-    })
-    this.capsule.mesh.position.set(0, 0, 0)
-    this.capsule.mesh.quaternion.set(0, 0, 0, 1)
-
-    this.group.add(this.capsule.mesh)
+    // this.capsule = new RenderElement({
+    //   world,
+    //   texture,
+    //   position,
+    //   shape: ShapeType.Capsule,
+    //   size,
+    //   rotation
+    // })
+    // this.capsule.mesh.position.set(0, 0, 0)
+    // this.capsule.mesh.quaternion.set(0, 0, 0, 1)
+    // this.group.add(this.capsule.mesh)
 
     this.physic = new PhysicElement({
       world,
@@ -95,6 +95,7 @@ export class Player {
 
     const onGround = this.world.physic.collisions
       .find(event => event.a.body[0] === this.physic.body[0] && event.a.normal[1] < -0.5)
+      || (Math.abs(velocity[1]) < 1 && !this.isJump)
 
     if (onGround) {
       this.isJump = false
@@ -110,6 +111,7 @@ export class Player {
     if (this.controller.isTop) { move.z = -1 }
     if (this.controller.isBottom) { move.z = 1 }
     move.setLength(this.isJump ? VELOCITY_AIR : VELOCITY_GROUND)
+
 
     // Apply move to velocity
     if (!this.isJump) {
@@ -137,6 +139,19 @@ export class Player {
 
     // Disable rotation
     this.world.physic.havok.HP_Body_SetAngularVelocity(this.physic.body, [0, 0, 0])
+
+    // Animation
+    const isMoving = move.length() > 0
+    if (isMoving) {
+      this.render.rotationY = Math.atan2(move.x, move.z)
+    }
+    if (this.isJump) {
+      this.render.animation = 'Jump'
+    } else if (isMoving) {
+      this.render.animation = 'Run'
+    } else {
+      this.render.animation = 'IDLE'
+    }
   }
 
   tick(delta: number) {
@@ -146,8 +161,6 @@ export class Player {
       [0, 0, 0, 1]
     )
     const { position, quaternion } = this.physic.getTransform();
-    // this.capsule.mesh.position.set(...position);
-    // this.capsule.mesh.quaternion.set(...quaternion);
 
     this.group.position.set(...position);
     this.group.quaternion.set(...quaternion);

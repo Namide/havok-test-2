@@ -4,7 +4,7 @@ export const SHADOW = true;
 export const SOFT_SHADOW = false;
 
 export const DRAG_DISTANCE = 0.5;
-export const ORBIT_CONTROL = true;
+export const ORBIT_CONTROL = false;
 export const CAMERA_FOLLOW = true;
 export const CAMERA_POSITION: Vector3 = [0, 6, 3] as const;
 

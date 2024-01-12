@@ -12,6 +12,9 @@
       "recommended": true,
       "suspicious": {
         "noConstEnum": "off"
+      },
+      "complexity": {
+        "noForEach": "off"
       }
     },
     "include": ["./*"]
