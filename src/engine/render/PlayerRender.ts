@@ -44,9 +44,9 @@ export class PlayerRender {
           switch ((mesh.material as { name: string }).name) {
             case 'Head':
               mesh.material = new THREE.MeshPhongMaterial({
-                color: 0xf9f06b,
-                specular: 0xff6b00,
-                emissive: 0x600000,
+                color: 0xf2d000,
+                specular: 0xcd001e,
+                emissive: 0x33000b,
                 emissiveIntensity: 10,
                 shininess: 10,
               })
