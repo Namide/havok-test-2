@@ -68,47 +68,58 @@ export class Controller {
   }
 
   get isTop() {
-    return this._isTop || this.testGamepadAxe(1, false) || this.testGamepadAxe(7, false)
+    return this._isTop
+      || this.testGamepadAxe(1, false)
+      || this.testGamepadAxe(7, false) /* Firefox */
+      || this.testGamepadPressed(12) /* Chromium */
   }
 
   get isLeft() {
-    return this._isLeft || this.testGamepadAxe(6, false) || this.testGamepadAxe(0, false)
+    return this._isLeft
+      || this.testGamepadAxe(6, false)
+      || this.testGamepadAxe(0, false) /* Firefox */
+      || this.testGamepadPressed(14) /* Chromium */
   }
 
   get isRight() {
-    return this._isRight || this.testGamepadAxe(6, true) || this.testGamepadAxe(0, true)
+    return this._isRight
+      || this.testGamepadAxe(6, true)
+      || this.testGamepadAxe(0, true) /* Firefox */
+      || this.testGamepadPressed(15) /* Chromium */
   }
 
   get isBottom() {
-    return this._isBottom || this.testGamepadAxe(1, true) || this.testGamepadAxe(7, true)
+    return this._isBottom
+      || this.testGamepadAxe(1, true)
+      || this.testGamepadAxe(7, true) /* Firefox */
+      || this.testGamepadPressed(13) /* Chromium */
   }
 
   get isAction1() {
-    return this._isAction1 || this.testGamepadPressed(0)
+    return this._isAction1
+      || this.testGamepadPressed(0)
   }
 
-  private _getGamepad() {
-    return this.gamepadEnabled
-      && navigator.getGamepads()[0]
-      || false
+  private _getGamepads() {
+    const gamepads = navigator.getGamepads()
+    return this.gamepadEnabled && gamepads.length > 0 && gamepads[0] ? gamepads as Gamepad[] : false
   }
 
   testGamepadAxe(index: number, isPositive = true) {
-    const gamepad = this._getGamepad()
-    if (gamepad && isPositive) {
-      return gamepad.axes[index] > 0.4
+    const gamepads = this._getGamepads()
+    if (gamepads && isPositive) {
+      return gamepads.reduce((value, gamepad) => Math.max(gamepad?.axes[index] || 0, value), 0) > 0.4
     }
-    if (gamepad && !isPositive) {
-      return gamepad.axes[index] < -0.4
+    if (gamepads && !isPositive) {
+      return gamepads.reduce((value, gamepad) => Math.min(gamepad?.axes[index] || 0, value), 0) < -0.4
     }
-
     return false
   }
 
   testGamepadPressed(index: number) {
-    const gamepad = this._getGamepad()
-    if (gamepad) {
-      return gamepad.buttons[index].pressed
+    const gamepads = this._getGamepads()
+    if (gamepads) {
+      return gamepads.reduce((value, gamepad) => value || gamepad?.buttons[index].pressed, false)
     }
     return false
   }
