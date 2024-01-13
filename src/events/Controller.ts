@@ -108,10 +108,10 @@ export class Controller {
   testGamepadAxe(index: number, isPositive = true) {
     const gamepads = this._getGamepads()
     if (gamepads && isPositive) {
-      return gamepads.reduce((value, gamepad) => Math.max(gamepad?.axes[index] || 0, value), 0) > 0.4
+      return gamepads.reduce((value, gamepad) => Math.max(gamepad?.axes?.[index] || 0, value), 0) > 0.4
     }
     if (gamepads && !isPositive) {
-      return gamepads.reduce((value, gamepad) => Math.min(gamepad?.axes[index] || 0, value), 0) < -0.4
+      return gamepads.reduce((value, gamepad) => Math.min(gamepad?.axes?.[index] || 0, value), 0) < -0.4
     }
     return false
   }
@@ -119,7 +119,7 @@ export class Controller {
   testGamepadPressed(index: number) {
     const gamepads = this._getGamepads()
     if (gamepads) {
-      return gamepads.reduce((value, gamepad) => value || gamepad?.buttons[index].pressed, false)
+      return gamepads.reduce((value, gamepad) => value || gamepad?.buttons?.[index]?.pressed, false)
     }
     return false
   }

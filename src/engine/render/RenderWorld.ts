@@ -3,6 +3,7 @@ import { OrbitControls } from "three/examples/jsm/Addons.js";
 import { CAMERA_FOLLOW, CAMERA_POSITION, ORBIT_CONTROL } from "../../config";
 import { ShadowLight } from "../render/ShadowLight";
 import { vector3 } from "../../constants";
+import { getBottomIntersect } from "./getIntersect";
 
 const raycaster = new THREE.Raycaster();
 
@@ -86,9 +87,7 @@ export class RenderWorld {
   render(center?: THREE.Object3D, ground?: THREE.Group) {
     if (center && ground) {
 
-      raycaster.set(center.position, vector3.set(0, -1, 0).clone())
-      const [gr] = raycaster.intersectObjects(ground.children)
-      const point = gr?.point
+      const point = getBottomIntersect(center.position, ground.children)
       const target = point ?? center.position
 
       // Light

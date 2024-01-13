@@ -75,7 +75,7 @@ export class Ground {
 
   addGround(x: number, y: number) {
     const groundPart = new Part(this.world, x, y, this.material)
-    this.group.add(groundPart.mesh)
+    this.group.add(groundPart.object3d)
     this.list.push(groundPart)
     return groundPart
   }

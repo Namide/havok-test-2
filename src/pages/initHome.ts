@@ -8,7 +8,7 @@ import { Quaternion } from "../engine/physic/havok/HavokPhysics";
 import { Element } from "../elements/Element";
 import { Player } from "../elements/Player";
 import { ShapeType } from "../types";
-import { Rock } from "../elements/Rock";
+import { Rock } from "../elements/ground/Rock";
 
 const GROUND_SIZE = 20;
 

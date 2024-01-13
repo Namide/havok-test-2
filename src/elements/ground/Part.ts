@@ -5,18 +5,21 @@ import { HP_BodyId, Quaternion, Vector3 } from "../../engine/physic/havok/HavokP
 import { World } from "../World"
 import { generateHeight } from "./heightMap"
 import { renderGeometryToPhysicShape } from "../../engine/physic/renderGeometryToPhysicShape";
+import { Rock } from "./Rock";
+import { getBottomIntersect } from "../../engine/render/getIntersect";
 
 const PRECISION = 8
 
 export class Part {
   world: World
-  mesh: THREE.Mesh
+  object3d: THREE.Group
   body: HP_BodyId
 
   x: number
   y: number
 
   constructor(world: World, x: number, y: number, material: THREE.Material) {
+    this.object3d = new THREE.Group()
     this.world = world
     this.x = x
     this.y = y
@@ -44,17 +47,27 @@ export class Part {
 
 
     // Render
-    this.mesh = new THREE.Mesh(geometry, material);
+    const mesh = new THREE.Mesh(geometry, material)
+    this.object3d.add(mesh);
+
+
+    // Rocks
+    const rocksCount = Math.round(Math.random() * 10) + 10
+    for (let i = 0; i < rocksCount; i++) {
+      const x = (Math.random() - 0.5) * width
+      const y = (Math.random() - 0.5) * height
+      this.addRock(x, y, depth, mesh, position)
+    }
 
 
     // Shadow
     if (SHADOW) {
-      this.mesh.receiveShadow = true;
-      this.mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      mesh.castShadow = true;
     }
 
     if (SHADOW) {
-      this.mesh.castShadow = false;
+      mesh.castShadow = false;
     }
 
 
@@ -77,13 +90,36 @@ export class Part {
 
     // Update
     const transform = this.world.physic.havok.HP_Body_GetQTransform(this.body)[1];
-    this.mesh.position.set(...transform[0]);
-    this.mesh.quaternion.set(...transform[1]);
+    mesh.position.set(...transform[0]);
+    mesh.quaternion.set(...transform[1]);
+  }
+
+  addRock(x: number, y: number, depthMax: number, mesh: THREE.Mesh, globalPosition: Vector3) {
+    const flyPosition = new THREE.Vector3(
+      x,
+      y,
+      depthMax + 0.1
+    )
+    const position = getBottomIntersect(
+      flyPosition,
+      [mesh],
+      new THREE.Vector3(0, 0, -1)
+    )
+
+    const rock = new Rock({ world: this.world, position: [globalPosition[0] + position.x, globalPosition[1] + position.z, globalPosition[2] - position.y] })
+    this.object3d.add(rock.mesh)
+
   }
 
   dispose() {
-    this.mesh.geometry.dispose()
-    this.mesh.parent?.remove(this.mesh)
+    this.object3d.traverse((object) => {
+      const mesh = object as THREE.Mesh
+      if (mesh.isMesh && mesh.geometry) {
+        mesh.geometry.dispose()
+        console.log('dispose')
+      }
+    })
+    this.object3d.parent?.remove(this.object3d)
     this.world.physic.havok.HP_Body_Release(this.body);
   }
 }

@@ -1,11 +1,11 @@
 import * as THREE from "three";
-import { World } from "./World";
-import { HP_BodyId, Quaternion, Vector3 } from "../engine/physic/havok/HavokPhysics";
-import { SHADOW } from "../config";
-import { loadGLTF } from "../engine/render/loadGLTF";
-import { euler, quaternion, vector3 } from "../constants";
-import { getGroundAmbiantOcclusionTexture, getGroundDiffuseTexture, getGroundNormalTexture } from "../engine/render/textures";
-import { renderGeometryToPhysicShape } from "../engine/physic/renderGeometryToPhysicShape";
+import { World } from "../World";
+import { HP_BodyId, Quaternion, Vector3 } from "../../engine/physic/havok/HavokPhysics";
+import { SHADOW } from "../../config";
+import { loadGLTF } from "../../engine/render/loadGLTF";
+import { euler, quaternion, vector3 } from "../../constants";
+import { getGroundAmbiantOcclusionTexture, getGroundDiffuseTexture, getGroundNormalTexture } from "../../engine/render/textures";
+import { renderGeometryToPhysicShape } from "../../engine/physic/renderGeometryToPhysicShape";
 
 export class Rock {
   world: World
@@ -51,7 +51,7 @@ export class Rock {
           // // geometry.computeVertexNormals()
           // geometry.computeVertexNormals();
           const vertices = mesh.geometry.getAttribute('position').array as Float32Array
-          const DISPLACE = 0.04
+          const DISPLACE = 0.1
           const SCALE = [Math.random() * 0.2 + 0.8, Math.random() * 0.2 + 0.8, Math.random() * 0.2 + 0.8]
           for (let j = 0; j < 4; j++) {
             for (let i = 0; i < vertices.length / 3; i++) {
@@ -75,6 +75,10 @@ export class Rock {
           this.mesh.add(mesh)
 
 
+          if (SHADOW) {
+            mesh.receiveShadow = true;
+            mesh.castShadow = true;
+          }
 
 
 
@@ -112,11 +116,6 @@ export class Rock {
     // this.mesh.position.set(...position)
     // this.mesh.rotation.set(0, Math.random() * 2 * Math.PI, 0) // quaternion.set(...rotation)
     // this.mesh.scale.set(Math.random() + 1, Math.random() + 1, Math.random() + 1) // quaternion.set(...rotation)
-
-    if (SHADOW) {
-      this.mesh.receiveShadow = true;
-      this.mesh.castShadow = true;
-    }
 
 
 

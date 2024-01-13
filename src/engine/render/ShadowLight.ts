@@ -11,6 +11,7 @@ const SHADOW_WIDTH = 10
 const SHADOW_HEIGHT = 10
 const SHADOW_DEPTH = 16
 const SHADOW_BLUR_RADIUS = 2
+// const SHADOW_BLUR_SAMPLE = 4
 
 // Soft shadows
 // https://github.com/mrdoob/three.js/blob/master/examples/webgl_shadowmap_pcss.html
@@ -49,6 +50,13 @@ export class ShadowLight {
     }
     if (SHADOW) {
       renderer.shadowMap.enabled = true;
+      /*
+        THREE.BasicShadowMap 
+        THREE.PCFShadowMap 
+        THREE.PCFSoftShadowMap
+        THREE.VSMShadowMap
+      */
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     }
 
     // Lights
@@ -63,6 +71,7 @@ export class ShadowLight {
       this.light.castShadow = true;
       if (!SOFT_SHADOW) {
         this.light.shadow.radius = SHADOW_BLUR_RADIUS
+        // this.light.shadow.blurSamples = SHADOW_BLUR_SAMPLE
       }
       this.light.shadow.mapSize.width = Math.max(width, height) / 2;
       this.light.shadow.mapSize.height = Math.max(width, height) / 2;
