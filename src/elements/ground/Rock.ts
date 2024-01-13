@@ -67,10 +67,10 @@ export class Rock {
 
               // data[i * 3 + 2] += Math.abs(perlin.noise(realX / quality, realY / quality, 0) * quality * 1.75) * (depth / 256);
             }
-            mesh.geometry.computeBoundingBox()
-            mesh.geometry.computeVertexNormals()
             // quality *= 5;
           }
+          mesh.geometry.computeBoundingBox()
+          mesh.geometry.computeVertexNormals()
 
           this.mesh.add(mesh)
 

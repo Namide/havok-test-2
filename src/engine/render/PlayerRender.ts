@@ -34,7 +34,12 @@ export class PlayerRender {
 
     loadGLTF('assets/cosmonaut.glb')
       .then(gltf => {
+        gltf
 
+        if (SHADOW) {
+          this.mesh.receiveShadow = true;
+          this.mesh.castShadow = true;
+        }
       })
 
     const loader = new GLTFLoader()
@@ -47,10 +52,10 @@ export class PlayerRender {
     this.mesh.scale.set(0.1, 0.1, 0.1)
     this.mesh.position.set(0, -0.165, 0)
 
-    if (SHADOW) {
-      this.mesh.receiveShadow = true;
-      this.mesh.castShadow = true;
-    }
+    // if (SHADOW) {
+    //   this.mesh.receiveShadow = true;
+    //   this.mesh.castShadow = true;
+    // }
   }
 
   set animation(value: StanceNames) {
@@ -102,7 +107,11 @@ export class PlayerRender {
             break
         }
 
-        mesh.castShadow = true;
+
+        if (SHADOW) {
+          mesh.receiveShadow = true;
+          mesh.castShadow = true;
+        }
       }
     });
 

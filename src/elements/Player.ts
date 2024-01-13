@@ -70,6 +70,26 @@ export class Player {
       motionType: PhysicMotionType.Dynamic
     })
 
+    // this.world.physic.havok.HP_Body_SetMassProperties(this.physic.body, [
+    //   /* center of mass */[0, 0, 0],
+    //   /* Mass */ 1,
+    //   /* Inertia for mass of 1*/[1, 1, 1],
+    //   /* Inertia Orientation */[0, 0, 0, 1],
+    // ]);
+
+
+    // Increase friction
+    this.world.physic.havok.HP_Shape_SetMaterial(this.physic.shape, [
+      /* static friction */ 1, // 0.5
+      /* dynamic friction */ 1, // 0.5
+      /* restitution */ 0, // 0
+
+      // @ts-ignore
+      /* friction combine mode */  this.world.physic.havok.MaterialCombine.MULTIPLY,
+
+      // @ts-ignore
+      /* restitution combine mode */ this.world.physic.havok.MaterialCombine.MULTIPLY,
+    ]);
 
 
     const collideEvents = /* this.world.physic.havok.EventType.COLLISION_STARTED.value | */ this.world.physic.havok.EventType.COLLISION_CONTINUED.value /* | this.world.physic.havok.EventType.COLLISION_FINISHED.value */;

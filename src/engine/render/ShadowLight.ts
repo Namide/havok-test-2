@@ -7,9 +7,9 @@ import { vector3 } from "../../constants";
 const LIGHT_POSITION = new THREE.Vector3(8, 8, 8)
 const TARGET_POSITION = new THREE.Vector3(0, 0, 0)
 
-const SHADOW_WIDTH = 10
-const SHADOW_HEIGHT = 10
-const SHADOW_DEPTH = 16
+const SHADOW_WIDTH = 8
+const SHADOW_HEIGHT = 8
+const SHADOW_DEPTH = 11
 const SHADOW_BLUR_RADIUS = 2
 // const SHADOW_BLUR_SAMPLE = 4
 
@@ -73,8 +73,8 @@ export class ShadowLight {
         this.light.shadow.radius = SHADOW_BLUR_RADIUS
         // this.light.shadow.blurSamples = SHADOW_BLUR_SAMPLE
       }
-      this.light.shadow.mapSize.width = Math.max(width, height) / 2;
-      this.light.shadow.mapSize.height = Math.max(width, height) / 2;
+      this.light.shadow.mapSize.width = Math.min(width, height);
+      this.light.shadow.mapSize.height = Math.min(width, height);
       this.light.shadow.camera.far = distance + SHADOW_DEPTH;
       this.light.shadow.camera.near = Math.max(1, distance - SHADOW_DEPTH);
       this.light.shadow.camera.top = SHADOW_HEIGHT
