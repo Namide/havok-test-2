@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { GROUND_SIZE, SHADOW } from "../../config"
+import { GROUND_ROCKS_MAX_COUNT, GROUND_ROCKS_MIN_COUNT, GROUND_SIZE, SHADOW } from "../../config"
 import { euler, quaternion } from "../../constants"
 import { HP_BodyId, Quaternion, Vector3 } from "../../engine/physic/havok/HavokPhysics"
 import { World } from "../World"
@@ -52,7 +52,7 @@ export class Part {
 
 
     // Rocks
-    const rocksCount = Math.round(Math.random() * 10) + 10
+    const rocksCount = Math.round(Math.random() * (GROUND_ROCKS_MAX_COUNT - GROUND_ROCKS_MIN_COUNT)) + GROUND_ROCKS_MIN_COUNT
     for (let i = 0; i < rocksCount; i++) {
       const x = (Math.random() - 0.5) * width
       const y = (Math.random() - 0.5) * height

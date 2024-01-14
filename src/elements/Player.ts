@@ -79,17 +79,17 @@ export class Player {
 
 
     // Increase friction
-    this.world.physic.havok.HP_Shape_SetMaterial(this.physic.shape, [
-      /* static friction */ 1, // 0.5
-      /* dynamic friction */ 1, // 0.5
-      /* restitution */ 0, // 0
+    // this.world.physic.havok.HP_Shape_SetMaterial(this.physic.shape, [
+    //   /* static friction */ 1, // 0.5
+    //   /* dynamic friction */ 1, // 0.5
+    //   /* restitution */ 0, // 0
 
-      // @ts-ignore
-      /* friction combine mode */  this.world.physic.havok.MaterialCombine.MULTIPLY,
+    //   // @ts-ignore
+    //   /* friction combine mode */  this.world.physic.havok.MaterialCombine.MULTIPLY,
 
-      // @ts-ignore
-      /* restitution combine mode */ this.world.physic.havok.MaterialCombine.MULTIPLY,
-    ]);
+    //   // @ts-ignore
+    //   /* restitution combine mode */ this.world.physic.havok.MaterialCombine.MULTIPLY,
+    // ]);
 
 
     const collideEvents = /* this.world.physic.havok.EventType.COLLISION_STARTED.value | */ this.world.physic.havok.EventType.COLLISION_CONTINUED.value /* | this.world.physic.havok.EventType.COLLISION_FINISHED.value */;
@@ -143,6 +143,18 @@ export class Player {
       if (move.z > 0) { velocity[2] = Math.max(move.z, velocity[2]) }
       if (move.z < 0) { velocity[2] = Math.min(move.z, velocity[2]) }
     }
+
+    // // projects a vector into the (normal) plane of another vector. The plane is assumed to pass through the origin.
+    // if (!!onGround !== onGround) {
+    //   const direction = new THREE.Vector3(...velocity)
+    //   const plane = new THREE.Vector3(...onGround.a.normal)
+
+    //   direction.projectOnPlane(plane)
+    //   // console.log(direction, direction.clone().projectOnPlane(plane))
+    //   // const newDirection = direction.clone().sub(plane.clone().multiply(plane.clone().dot(direction.clone())))
+
+    //   // subvecs(v, multvec(plane, dotvecs(plane, v)));
+    // }
 
     // Apply jump to velocity
     if (this.controller.isAction1 && !this.isJump) {

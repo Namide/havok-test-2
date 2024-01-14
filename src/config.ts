@@ -10,3 +10,6 @@ export const CAMERA_POSITION: Vector3 = [0, 5, 2] as const;
 
 export const GROUND_SIZE: Vector3 = [10, 30, 10] as const;
 export const DEBUG = true;
+
+export const GROUND_ROCKS_MIN_COUNT = 10
+export const GROUND_ROCKS_MAX_COUNT = 20 
