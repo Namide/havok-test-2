@@ -8,7 +8,6 @@ import { Quaternion } from "../engine/physic/havok/HavokPhysics";
 import { Element } from "../elements/Element";
 import { Player } from "../elements/Player";
 import { ShapeType } from "../types";
-import { Rock } from "../elements/ground/Rock";
 
 const GROUND_SIZE = 20;
 
@@ -39,18 +38,16 @@ export async function initHome() {
   const player = new Player({
     world,
     texture,
-    position: [5, 6, 0],
+    position: [
+      1,
+      -5,
+      1
+    ],
   });
   world.render.scene.add(player.group);
 
-  // Rock
-  const rock = new Rock({
-    world,
-    position: [0, -5, 0],
-    rotation: [0, 0, 0, 1],
-    size: [1, 1, 1]
-  });
-  world.render.scene.add(rock.mesh);
+  // Force camera position
+  world.display(player.group, ground.group, false)
 
   // Sphere
   for (let i = 0; i < 10; i++) {

@@ -7,6 +7,8 @@ import { Part } from './Part'
 
 // https://github.com/BabylonJS/Babylon.js/blob/48cf7b374a7bbee9f3bef02f2992715ed683cf98/packages/dev/core/src/Physics/v2/Plugins/havokPlugin.ts
 
+const PLAYER_DISTANCE = 0.5
+
 export class Ground {
   group: THREE.Group = new THREE.Group()
   world: World
@@ -36,28 +38,21 @@ export class Ground {
       });
 
 
-    // Physic
-
-    // this.body = []
-
     this.addGround(0, 0)
-    // this.addGround(GROUND_SIZE[0], GROUND_SIZE[2])
-    // this.addGround(GROUND_SIZE[0], 0)
   }
 
   update(x: number, y: number) {
-    const middle = [
-      Math.round(x / GROUND_SIZE[0]),
-      Math.round(y / GROUND_SIZE[2])
-    ]
-
     const arround: { x: number, y: number }[] = []
     for (let i = -1; i < 2; i++) {
       for (let j = -1; j < 2; j++) {
-        arround.push({
-          x: (middle[0] + i) * GROUND_SIZE[0],
-          y: (middle[1] + j) * GROUND_SIZE[2]
-        })
+        const xRounded = (Math.round((x + i * PLAYER_DISTANCE * GROUND_SIZE[0]) / GROUND_SIZE[0])) * GROUND_SIZE[0]
+        const yRounded = (Math.round((y + j * PLAYER_DISTANCE * GROUND_SIZE[2]) / GROUND_SIZE[2])) * GROUND_SIZE[2]
+        if (!arround.find(item => item.x === xRounded && item.y === yRounded)) {
+          arround.push({
+            x: xRounded,
+            y: yRounded
+          })
+        }
       }
     }
 

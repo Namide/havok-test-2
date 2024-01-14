@@ -32,7 +32,7 @@ export class World {
     this.physic.tick(delta)
   }
 
-  display(center?: THREE.Object3D, ground?: THREE.Group) {
-    this.render.render(center, ground)
+  display(center?: THREE.Object3D, ground?: THREE.Group, smooth = true) {
+    this.render.render(center, ground, smooth)
   }
 }

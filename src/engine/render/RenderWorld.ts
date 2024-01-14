@@ -2,10 +2,8 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 import { CAMERA_FOLLOW, CAMERA_POSITION, ORBIT_CONTROL } from "../../config";
 import { ShadowLight } from "../render/ShadowLight";
-import { vector3 } from "../../constants";
+import { matrix4, vector3 } from "../../constants";
 import { getBottomIntersect } from "./getIntersect";
-
-const raycaster = new THREE.Raycaster();
 
 // Soft shadows
 // https://github.com/mrdoob/three.js/blob/master/examples/webgl_shadowmap_pcss.html
@@ -78,13 +76,19 @@ export class RenderWorld {
   }
 
   tick() {
-    // mouseEmitter.testHover();
     if (this.controls) {
       this.controls.update();
     }
   }
 
-  render(center?: THREE.Object3D, ground?: THREE.Group) {
+  // testFrustrumCulling(object: THREE.Object3D, updateFrustrum = false) {
+  //   if (updateFrustrum) {
+  //     this.frustrum.setFromProjectionMatrix(matrix4.multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse))
+  //   }
+  //   return this.frustrum.intersectsObject(object)
+  // }
+
+  render(center?: THREE.Object3D, ground?: THREE.Group, smooth = true) {
     if (center && ground) {
 
       const point = getBottomIntersect(center.position, ground.children)
@@ -96,8 +100,13 @@ export class RenderWorld {
       // Camera follow
       if (CAMERA_FOLLOW && !ORBIT_CONTROL) {
         if (point) {
-          this.camera.position.lerp(vector3.set(...CAMERA_POSITION).add(point), 0.1)
-          this._targetCamera.lerp(point, 0.1)
+          if (smooth) {
+            this.camera.position.lerp(vector3.set(...CAMERA_POSITION).add(point), 0.1)
+            this._targetCamera.lerp(point, 0.1)
+          } else {
+            this.camera.position.copy(vector3.set(...CAMERA_POSITION).add(point))
+            this._targetCamera.copy(point)
+          }
           this.camera.lookAt(this._targetCamera);
         }
       }
