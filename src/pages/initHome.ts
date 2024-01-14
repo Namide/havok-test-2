@@ -63,7 +63,7 @@ export async function initHome() {
   }
 
   // Cube
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 10; i++) {
     const cube = new Element({
       world,
       texture,
