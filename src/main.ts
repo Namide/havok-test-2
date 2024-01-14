@@ -2,7 +2,7 @@ import { initHome } from "./pages/initHome";
 import { Router } from "./router/Router";
 import "./style.css";
 
-const baseURL = '/'
+const baseURL = import.meta.env.BASE_URL
 
 const router = new Router([
   {
@@ -14,7 +14,7 @@ const router = new Router([
   {
     title: "Page not found",
     name: "404",
-    path: "/error",
+    path: `${baseURL}/error`,
     regex: /^\*$/,
   },
 ] as const);
