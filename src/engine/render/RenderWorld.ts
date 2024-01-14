@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 import { CAMERA_FOLLOW, CAMERA_POSITION, ORBIT_CONTROL } from "../../config";
 import { ShadowLight } from "../render/ShadowLight";
-import { matrix4, vector3 } from "../../constants";
+import { vector3 } from "../../constants";
 import { getBottomIntersect } from "./getIntersect";
 
 // Soft shadows
@@ -80,13 +80,6 @@ export class RenderWorld {
       this.controls.update();
     }
   }
-
-  // testFrustrumCulling(object: THREE.Object3D, updateFrustrum = false) {
-  //   if (updateFrustrum) {
-  //     this.frustrum.setFromProjectionMatrix(matrix4.multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse))
-  //   }
-  //   return this.frustrum.intersectsObject(object)
-  // }
 
   render(center?: THREE.Object3D, ground?: THREE.Group, smooth = true) {
     if (center && ground) {

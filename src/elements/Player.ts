@@ -10,7 +10,6 @@ import { PlayerRender } from "../engine/render/PlayerRender";
 export class Player {
   world: World
   group = new THREE.Group()
-  // capsule: RenderElement<ShapeType.Capsule>
   render: PlayerRender
   physic: PhysicElement<ShapeType.Capsule>
   controller: Controller
@@ -21,7 +20,6 @@ export class Player {
 
   constructor({
     world,
-    texture,
     position,
     rotation = [0, 0, 0, 1],
   }: {
@@ -41,25 +39,8 @@ export class Player {
 
     this.controller = new Controller({})
 
-    this.render = new PlayerRender({
-      world,
-      texture,
-      position,
-      rotation
-    })
+    this.render = new PlayerRender({ world })
     this.group.add(this.render.mesh)
-
-    // this.capsule = new RenderElement({
-    //   world,
-    //   texture,
-    //   position,
-    //   shape: ShapeType.Capsule,
-    //   size,
-    //   rotation
-    // })
-    // this.capsule.mesh.position.set(0, 0, 0)
-    // this.capsule.mesh.quaternion.set(0, 0, 0, 1)
-    // this.group.add(this.capsule.mesh)
 
     this.physic = new PhysicElement({
       world,

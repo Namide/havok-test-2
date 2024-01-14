@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { SHADOW } from "../../config";
-import { World } from "../elements/World";
 import { Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
+import { World } from "../../elements/World";
 
 export class RenderBox {
   world: World

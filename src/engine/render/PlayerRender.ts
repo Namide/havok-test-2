@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import { SHADOW } from "../../config";
 import { World } from "../../elements/World";
-import { Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
 import { GLTF, GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { loadGLTF } from "./loadGLTF";
 
@@ -21,16 +20,9 @@ export class PlayerRender {
   }
 
   constructor(
-    { world, texture, position, rotation }:
-      { world: World, texture: THREE.Texture, position: Vector3, rotation: Quaternion }
+    { world }: { world: World }
   ) {
     this.world = world
-
-    // const material = new (
-    //   SHADOW ? THREE.MeshLambertMaterial : THREE.MeshBasicMaterial
-    // )({
-    //   map: texture,
-    // });
 
     loadGLTF('assets/cosmonaut.glb')
       .then(gltf => {
