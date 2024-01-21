@@ -2,7 +2,7 @@ import { initHome } from "./pages/initHome";
 import { Router } from "./router/Router";
 import "./style.css";
 
-const baseURL = import.meta.env.BASE_URL
+const baseURL = import.meta.env.BASE_URL;
 
 const router = new Router([
   {
@@ -21,6 +21,6 @@ const router = new Router([
 
 router.on("landing", () => console.log("landing"));
 router.on("404", () => console.log("404"));
-console.log(router.route?.name)
+console.log(router.route?.name);
 
-initHome()
+initHome();

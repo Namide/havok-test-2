@@ -1,12 +1,12 @@
 import * as THREE from "three";
 import { euler, quaternion } from "../constants";
+import { Element } from "../elements/Element";
+import { Player } from "../elements/Player";
 import { World } from "../elements/World";
-import { getCheckerTexture } from "../engine/render/textures";
 import { Ground } from "../elements/ground/Ground";
 import { getHavok } from "../engine/physic/getHavok";
 import { Quaternion } from "../engine/physic/havok/HavokPhysics";
-import { Element } from "../elements/Element";
-import { Player } from "../elements/Player";
+import { getCheckerTexture } from "../engine/render/textures";
 import { ShapeType } from "../types";
 
 const GROUND_SIZE = 20;
@@ -22,32 +22,27 @@ const getRandomRotation = () =>
     .toArray() as Quaternion;
 
 export async function initHome() {
-
-  const havok = await getHavok()
-  const texture = await getCheckerTexture()
-  const world = new World(havok)
+  const havok = await getHavok();
+  const texture = await getCheckerTexture();
+  const world = new World(havok);
   const clock = new THREE.Clock();
 
-  const updates: (() => void)[] = []
+  const updates: (() => void)[] = [];
 
   // Ground
-  const ground = new Ground(world)
+  const ground = new Ground(world);
   world.render.scene.add(ground.group);
 
   // Player
   const player = new Player({
     world,
     texture,
-    position: [
-      1,
-      -5,
-      1
-    ],
+    position: [1, -5, 1],
   });
   world.render.scene.add(player.group);
 
   // Force camera position
-  world.display(player.group, ground.group, false)
+  world.display(player.group, ground.group, false);
 
   // Sphere
   for (let i = 0; i < 10; i++) {
@@ -90,12 +85,12 @@ export async function initHome() {
     for (const update of updates) {
       update();
     }
-    player.tick(delta)
-    world.display(player.group, ground.group)
-    ground.update(player.group.position.x, player.group.position.z)
+    player.tick(delta);
+    world.display(player.group, ground.group);
+    ground.update(player.group.position.x, player.group.position.z);
   }
 
   return {
-    world
-  }
+    world,
+  };
 }

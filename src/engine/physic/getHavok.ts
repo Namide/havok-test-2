@@ -2,9 +2,9 @@ import HavokPhysics, {
   ActivationState,
   ConstraintAxis,
   ConstraintAxisLimitMode,
+  EventType,
   type HavokPhysicsWithBindings,
   MotionType,
-  EventType,
 } from "./havok/HavokPhysics";
 
 // https://github.com/N8python/havokDemo
@@ -41,7 +41,7 @@ let havok: HavokPhysicsWithBindings & {
     COLLISION_FINISHED: { value: EventType.COLLISION_FINISHED };
     TRIGGER_ENTERED: { value: EventType.TRIGGER_ENTERED };
     TRIGGER_EXITED: { value: EventType.TRIGGER_EXITED };
-  }
+  };
 };
 
 export async function getHavok() {
@@ -51,4 +51,4 @@ export async function getHavok() {
   return havok;
 }
 
-export type Havok = Awaited<ReturnType<typeof getHavok>>
+export type Havok = Awaited<ReturnType<typeof getHavok>>;

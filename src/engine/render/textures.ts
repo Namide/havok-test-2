@@ -7,20 +7,28 @@ let checkerTexture: THREE.Texture;
 // }
 
 export const getGroundNormalTexture = () => {
-  return new THREE.TextureLoader().load(`${import.meta.env.BASE_URL}assets/Moon_001_NORM.jpeg`);
-}
+  return new THREE.TextureLoader().load(
+    `${import.meta.env.BASE_URL}assets/Moon_001_NORM.jpeg`,
+  );
+};
 
 export const getGroundDiffuseTexture = () => {
-  return new THREE.TextureLoader().load(`${import.meta.env.BASE_URL}assets/Moon_001_COLOR.jpeg`);
-}
+  return new THREE.TextureLoader().load(
+    `${import.meta.env.BASE_URL}assets/Moon_001_COLOR.jpeg`,
+  );
+};
 
 export const getGroundAmbiantOcclusionTexture = () => {
-  return new THREE.TextureLoader().load(`${import.meta.env.BASE_URL}assets/Moon_001_OCC.jpeg`);
-}
+  return new THREE.TextureLoader().load(
+    `${import.meta.env.BASE_URL}assets/Moon_001_OCC.jpeg`,
+  );
+};
 
 export const getGroundSpecularTexture = () => {
-  return new THREE.TextureLoader().load(`${import.meta.env.BASE_URL}assets/Moon_001_SPEC.jpeg`);
-}
+  return new THREE.TextureLoader().load(
+    `${import.meta.env.BASE_URL}assets/Moon_001_SPEC.jpeg`,
+  );
+};
 
 // export const getGroundDisplaceTexture = () => {
 //   return new THREE.TextureLoader().load(`${import.meta.env.BASE_URL}assets/Moon_001_DISP.png`);

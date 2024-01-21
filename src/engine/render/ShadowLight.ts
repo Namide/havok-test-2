@@ -1,16 +1,16 @@
 import * as THREE from "three";
 import { DEBUG, SHADOW, SOFT_SHADOW } from "../../config";
+import { vector3 } from "../../constants";
 import pcssFragment from "../render/pcss.fragment.glsl";
 import pcssGetShadowFragment from "../render/pcssGetShadow.fragment.glsl";
-import { vector3 } from "../../constants";
 
-const LIGHT_POSITION = new THREE.Vector3(8, 8, 8)
-const TARGET_POSITION = new THREE.Vector3(0, 0, 0)
+const LIGHT_POSITION = new THREE.Vector3(8, 8, 8);
+const TARGET_POSITION = new THREE.Vector3(0, 0, 0);
 
-const SHADOW_WIDTH = 8
-const SHADOW_HEIGHT = 8
-const SHADOW_DEPTH = 11
-const SHADOW_BLUR_RADIUS = 2
+const SHADOW_WIDTH = 8;
+const SHADOW_HEIGHT = 8;
+const SHADOW_DEPTH = 11;
+const SHADOW_BLUR_RADIUS = 2;
 // const SHADOW_BLUR_SAMPLE = 4
 
 // Soft shadows
@@ -18,8 +18,7 @@ const SHADOW_BLUR_RADIUS = 2
 // https://threejs.org/examples/?q=shado#webgl_shadowmap_pcss
 
 export class ShadowLight {
-
-  light?: THREE.DirectionalLight
+  light?: THREE.DirectionalLight;
 
   init({
     renderer,
@@ -27,10 +26,10 @@ export class ShadowLight {
     width,
     height,
   }: {
-    renderer: THREE.WebGLRenderer,
-    scene: THREE.Scene,
-    width: number,
-    height: number
+    renderer: THREE.WebGLRenderer;
+    scene: THREE.Scene;
+    width: number;
+    height: number;
   }) {
     // Shadows
     if (SOFT_SHADOW && SHADOW) {
@@ -60,24 +59,24 @@ export class ShadowLight {
     }
 
     // Lights
-    scene.add(new THREE.AmbientLight(0xAAAAFF, 2));
-    this.light = new THREE.DirectionalLight(0xFFFFFF, 3);
+    scene.add(new THREE.AmbientLight(0xaaaaff, 2));
+    this.light = new THREE.DirectionalLight(0xffffff, 3);
     this.light.position.copy(LIGHT_POSITION);
     this.light.lookAt(TARGET_POSITION);
 
-    const distance = vector3.copy(LIGHT_POSITION).sub(TARGET_POSITION).length()
+    const distance = vector3.copy(LIGHT_POSITION).sub(TARGET_POSITION).length();
 
     if (SHADOW) {
       this.light.castShadow = true;
       if (!SOFT_SHADOW) {
-        this.light.shadow.radius = SHADOW_BLUR_RADIUS
+        this.light.shadow.radius = SHADOW_BLUR_RADIUS;
         // this.light.shadow.blurSamples = SHADOW_BLUR_SAMPLE
       }
       this.light.shadow.mapSize.width = Math.min(width, height);
       this.light.shadow.mapSize.height = Math.min(width, height);
       this.light.shadow.camera.far = distance + SHADOW_DEPTH;
       this.light.shadow.camera.near = Math.max(1, distance - SHADOW_DEPTH);
-      this.light.shadow.camera.top = SHADOW_HEIGHT
+      this.light.shadow.camera.top = SHADOW_HEIGHT;
       this.light.shadow.camera.bottom = -SHADOW_HEIGHT;
       this.light.shadow.camera.left = SHADOW_WIDTH;
       this.light.shadow.camera.right = -SHADOW_WIDTH;
@@ -92,9 +91,9 @@ export class ShadowLight {
 
   center(target: THREE.Vector3) {
     if (SHADOW && this.light) {
-      this.light.position.copy(target).add(LIGHT_POSITION)
-      this.light.target.position.copy(target)
-      this.light.target.updateMatrixWorld()
+      this.light.position.copy(target).add(LIGHT_POSITION);
+      this.light.target.position.copy(target);
+      this.light.target.updateMatrixWorld();
     }
   }
 }

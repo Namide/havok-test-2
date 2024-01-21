@@ -10,41 +10,58 @@ function createCollisionEvent(buffer: ArrayBufferLike, offset: number) {
   return {
     a: {
       body: [BigInt(intBuf[offA])] as HP_BodyId,
-      position: [floatBuf[offA + 8], floatBuf[offA + 9], floatBuf[offA + 10]] as Vector3,
-      normal: [floatBuf[offA + 11], floatBuf[offA + 12], floatBuf[offA + 13]] as Vector3,
+      position: [
+        floatBuf[offA + 8],
+        floatBuf[offA + 9],
+        floatBuf[offA + 10],
+      ] as Vector3,
+      normal: [
+        floatBuf[offA + 11],
+        floatBuf[offA + 12],
+        floatBuf[offA + 13],
+      ] as Vector3,
     },
     b: {
       body: [BigInt(intBuf[offB])] as HP_BodyId,
-      position: [floatBuf[offB + 8], floatBuf[offB + 9], floatBuf[offB + 10]] as Vector3,
-      normal: [floatBuf[offB + 11], floatBuf[offB + 12], floatBuf[offB + 13]] as Vector3,
+      position: [
+        floatBuf[offB + 8],
+        floatBuf[offB + 9],
+        floatBuf[offB + 10],
+      ] as Vector3,
+      normal: [
+        floatBuf[offB + 11],
+        floatBuf[offB + 12],
+        floatBuf[offB + 13],
+      ] as Vector3,
     },
     impulse: floatBuf[offB + 13 + 3],
-    type: intBuf[0]
-  }
+    type: intBuf[0],
+  };
 }
 
 export class PhysicWorld {
-
-  world: HP_WorldId
-  havok: Havok
-  collisions: ReturnType<typeof createCollisionEvent>[] = []
+  world: HP_WorldId;
+  havok: Havok;
+  collisions: ReturnType<typeof createCollisionEvent>[] = [];
 
   constructor(havok: Havok) {
-    this.havok = havok
+    this.havok = havok;
     this.world = this.havok.HP_World_Create()[1];
     this.havok.HP_World_SetGravity(this.world, [0, -9.81, 0]);
   }
 
   collisionTest() {
-    this.collisions = []
+    this.collisions = [];
     let eventAddress = this.havok.HP_World_GetCollisionEvents(this.world)[1];
 
     // const event = new CollisionEvent();
     // const worldAddr = Number(this.world);
     if (eventAddress) {
-
-      const event = createCollisionEvent(this.havok.HEAPU8.buffer, eventAddress)
-      this.collisions.push(event)
+      const event = createCollisionEvent(
+        this.havok.HEAPU8.buffer,
+        eventAddress,
+      );
+      this.collisions.push(event);
 
       // console.log(event)
 
@@ -108,14 +125,15 @@ export class PhysicWorld {
       //   }
       // }
 
-      eventAddress = this.havok.HP_World_GetNextCollisionEvent(Number(this.world), eventAddress);
+      eventAddress = this.havok.HP_World_GetNextCollisionEvent(
+        Number(this.world),
+        eventAddress,
+      );
     }
   }
 
-
   tick(delta: number) {
     this.havok.HP_World_Step(this.world, delta);
-    this.collisionTest()
+    this.collisionTest();
   }
 }
-

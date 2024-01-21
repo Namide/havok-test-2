@@ -12,17 +12,19 @@ interface PluginMemoryRef {
   numObjects: number;
 }
 
-
 function getVertices(havok: Havok, vertices: Float32Array) {
-
   // @ts-ignore
   const bufferBegin = havok._malloc(vertices.byteLength * 4);
-  const ret = new Float32Array(havok.HEAPU8.buffer, bufferBegin, vertices.byteLength);
-  ret.set(vertices)
+  const ret = new Float32Array(
+    havok.HEAPU8.buffer,
+    bufferBegin,
+    vertices.byteLength,
+  );
+  ret.set(vertices);
 
   return {
     offset: bufferBegin,
-    numObjects: vertices.byteLength
+    numObjects: vertices.byteLength,
   };
 }
 
@@ -39,27 +41,36 @@ function getTriangles(havok: Havok, indices: number[]): PluginMemoryRef {
   // @ts-ignore
   const bufferBegin = havok._malloc(nBytes);
   const ret = new Int32Array(havok.HEAPU8.buffer, bufferBegin, indices.length);
-  ret.set(new Uint8Array(indices))
+  ret.set(new Uint8Array(indices));
   // for (let i = 0; i < indices.length; i++) {
   //   ret[i] = indices[i];
   // }
   return { offset: bufferBegin, numObjects: indices.length };
 }
 
-export function renderGeometryToPhysicShape(geometry: THREE.BufferGeometry, havok: Havok) {
-
-  const vertices = geometry.getAttribute('position').array
+export function renderGeometryToPhysicShape(
+  geometry: THREE.BufferGeometry,
+  havok: Havok,
+) {
+  const vertices = geometry.getAttribute("position").array;
   const havokPositions = getVertices(havok, vertices as Float32Array);
   const numVec3s = havokPositions.numObjects / 3;
-  const havokTriangles = getTriangles(havok, [...(geometry.getIndex()?.array || [])])
+  const havokTriangles = getTriangles(havok, [
+    ...(geometry.getIndex()?.array || []),
+  ]);
   const numTriangles = havokTriangles.numObjects / 3;
-  const shape = havok.HP_Shape_CreateMesh(havokPositions.offset, numVec3s, havokTriangles.offset, numTriangles)[1]
+  const shape = havok.HP_Shape_CreateMesh(
+    havokPositions.offset,
+    numVec3s,
+    havokTriangles.offset,
+    numTriangles,
+  )[1];
 
   // @ts-ignore
-  havok._free(havokTriangles)
+  havok._free(havokTriangles);
 
   // @ts-ignore
-  havok._free(havokPositions)
+  havok._free(havokPositions);
 
-  return shape
+  return shape;
 }
