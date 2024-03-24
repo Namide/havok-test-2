@@ -3,8 +3,7 @@
 ![](public/assets/havok-test.jpg)
 
 
-Implement Havok WASM web version.  
-With drag'n drop support.  
+Implement Havok WASM web version for platform game test (controller support).  
 [namide.github.io/havok-test-2](https://namide.github.io/havok-test-2/)
 
 ## Commands
